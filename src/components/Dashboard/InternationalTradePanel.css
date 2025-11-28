@@ -81,7 +81,7 @@
 }
 
 .legend-label {
-  @apply text-sm text-slate-600 font-medium;
+  @apply text-sm text-black font-medium;
 }
 
 /* Custom Animations */
@@ -90,6 +90,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -105,31 +106,31 @@
   .international-trade-panel {
     @apply p-4;
   }
-  
+
   .kpi-grid {
     @apply grid-cols-1 gap-3;
   }
-  
+
   .kpi-card {
     @apply p-4;
   }
-  
+
   .kpi-content {
     @apply space-x-3;
   }
-  
+
   .kpi-icon {
     @apply text-2xl;
   }
-  
+
   .kpi-value {
     @apply text-xl;
   }
-  
+
   .charts-section {
     @apply grid-cols-1 gap-4;
   }
-  
+
   .chart-card {
     @apply p-4;
   }
@@ -139,23 +140,23 @@
   .panel-title {
     @apply text-2xl;
   }
-  
+
   .kpi-card {
     @apply p-3;
   }
-  
+
   .kpi-content {
     @apply flex-col space-x-0 space-y-2 text-center;
   }
-  
+
   .kpi-icon {
     @apply text-xl;
   }
-  
+
   .kpi-value {
     @apply text-lg;
   }
-  
+
   .kpi-title {
     @apply text-xs;
   }
@@ -205,8 +206,13 @@
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 /* Enhanced Gradients */

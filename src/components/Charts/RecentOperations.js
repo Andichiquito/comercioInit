@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaTruck, FaShip, FaPlane, FaCalendarAlt, FaBox, FaGlobe, FaWeight, FaDollarSign, FaCheckCircle } from 'react-icons/fa';
 
 const RecentOperations = ({ data }) => {
   const formatCurrency = (value) => {
@@ -34,17 +35,17 @@ const RecentOperations = ({ data }) => {
   };
 
   const getTransportIcon = (transport) => {
-    if (!transport) return '🚚';
+    if (!transport) return <FaTruck />;
     
     const transportLower = transport.toLowerCase();
     if (transportLower.includes('maritimo') || transportLower.includes('marítimo')) {
-      return '🚢';
+      return <FaShip />;
     } else if (transportLower.includes('aereo') || transportLower.includes('aéreo')) {
-      return '✈️';
+      return <FaPlane />;
     } else if (transportLower.includes('terrestre')) {
-      return '🚛';
+      return <FaTruck />;
     }
-    return '🚚';
+    return <FaTruck />;
   };
 
   if (!data || data.length === 0) {
@@ -61,13 +62,13 @@ const RecentOperations = ({ data }) => {
         <table className="operations-table">
           <thead>
             <tr>
-              <th>📅 Fecha</th>
-              <th>📦 Producto</th>
-              <th>🌍 País Destino</th>
-              <th>⚖️ Cantidad</th>
-              <th>💰 Valor (USD)</th>
-              <th>🚚 Transporte</th>
-              <th>✅ Estado</th>
+              <th><FaCalendarAlt className="inline mr-1" /> Fecha</th>
+              <th><FaBox className="inline mr-1" /> Producto</th>
+              <th><FaGlobe className="inline mr-1" /> País Destino</th>
+              <th><FaWeight className="inline mr-1" /> Cantidad</th>
+              <th><FaDollarSign className="inline mr-1" /> Valor (USD)</th>
+              <th><FaTruck className="inline mr-1" /> Transporte</th>
+              <th><FaCheckCircle className="inline mr-1" /> Estado</th>
             </tr>
           </thead>
           <tbody>

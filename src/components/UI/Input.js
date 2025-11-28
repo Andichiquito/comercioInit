@@ -1,4 +1,5 @@
 import React, { useState, forwardRef } from 'react';
+import { FaExclamationTriangle, FaCheckCircle, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Input = forwardRef(({
   label,
@@ -85,7 +86,7 @@ const Input = forwardRef(({
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white transition-colors"
           >
-            {showPassword ? '🙈' : '👁️'}
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
         )}
         
@@ -98,14 +99,14 @@ const Input = forwardRef(({
       
       {error && (
         <p className="text-red-400 text-sm flex items-center">
-          <span className="mr-1">⚠️</span>
+          <FaExclamationTriangle className="mr-1" />
           {error}
         </p>
       )}
       
       {success && (
         <p className="text-green-400 text-sm flex items-center">
-          <span className="mr-1">✅</span>
+          <FaCheckCircle className="mr-1" />
           {success}
         </p>
       )}
@@ -180,14 +181,14 @@ export const TextArea = forwardRef(({
       
       {error && (
         <p className="text-red-400 text-sm flex items-center">
-          <span className="mr-1">⚠️</span>
+          <FaExclamationTriangle className="mr-1" />
           {error}
         </p>
       )}
       
       {success && (
         <p className="text-green-400 text-sm flex items-center">
-          <span className="mr-1">✅</span>
+          <FaCheckCircle className="mr-1" />
           {success}
         </p>
       )}
@@ -273,14 +274,14 @@ export const Select = forwardRef(({
       
       {error && (
         <p className="text-red-400 text-sm flex items-center">
-          <span className="mr-1">⚠️</span>
+          <FaExclamationTriangle className="mr-1" />
           {error}
         </p>
       )}
       
       {success && (
         <p className="text-green-400 text-sm flex items-center">
-          <span className="mr-1">✅</span>
+          <FaCheckCircle className="mr-1" />
           {success}
         </p>
       )}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './GraficosAvanzados.css';
 
 const GraficosAvanzados = () => {
@@ -11,7 +12,7 @@ const GraficosAvanzados = () => {
     transporte: [],
     mensual: []
   });
-  
+
   // Estados para controlar el tipo de gráfico
   const [chartTypes, setChartTypes] = useState({
     paises: 'barras', // 'barras', 'circular', 'lineas'
@@ -31,7 +32,7 @@ const GraficosAvanzados = () => {
       setError(null);
       console.log('🔄 Cargando datos para gráficos avanzados...');
       console.log('🌐 API Base URL:', API_BASE);
-      
+
       const [exportacionesRes, paisesRes, transporteRes, mensualRes] = await Promise.all([
         axios.get(`${API_BASE}/views/query/vista_estadisticas_generales`, {
           timeout: 10000,
@@ -74,7 +75,7 @@ const GraficosAvanzados = () => {
 
     } catch (err) {
       console.error('❌ Error cargando datos:', err);
-      
+
       if (err.code === 'ECONNREFUSED' || err.code === 'ERR_NETWORK') {
         setError('Error de conexión: El servidor backend no está disponible. Verifica que esté ejecutándose en el puerto 5000.');
       } else if (err.response) {
@@ -101,7 +102,7 @@ const GraficosAvanzados = () => {
 
   const getTransportIcon = (transport) => {
     if (!transport) return '🚚';
-    
+
     const transportLower = transport.toLowerCase();
     if (transportLower.includes('maritimo') || transportLower.includes('marítimo')) {
       return '🚢';
@@ -150,10 +151,10 @@ const GraficosAvanzados = () => {
                     </div>
                   </div>
                   <div className="bar-container">
-                    <div 
-                      className="bar-fill" 
-                      style={{ 
-                        width: `${percentage}%` 
+                    <div
+                      className="bar-fill"
+                      style={{
+                        width: `${percentage}%`
                       }}
                     >
                       <span className="bar-percentage-text">{percentage.toFixed(1)}%</span>
@@ -164,7 +165,7 @@ const GraficosAvanzados = () => {
             })}
           </div>
         );
-      
+
       case 'circular':
         return (
           <div className="pie-chart">
@@ -186,7 +187,7 @@ const GraficosAvanzados = () => {
             ))}
           </div>
         );
-      
+
       case 'lineas':
         return (
           <div className="line-chart">
@@ -197,8 +198,8 @@ const GraficosAvanzados = () => {
             </div>
             <div className="line-path">
               {data.map((pais, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="line-point"
                   style={{
                     left: `${(index / (data.length - 1)) * 100}%`,
@@ -214,7 +215,7 @@ const GraficosAvanzados = () => {
             </div>
           </div>
         );
-      
+
       default:
         return null;
     }
@@ -224,29 +225,66 @@ const GraficosAvanzados = () => {
   const renderTransporteChart = () => {
     const data = chartData.transporte;
 
+    // Validar que hay datos
+    if (!data || data.length === 0) {
+      return (
+        <div className="chart-empty">
+          <p>No hay datos de transporte disponibles</p>
+        </div>
+      );
+    }
+
     switch (chartTypes.transporte) {
       case 'circular':
+        // Calcular el total de operaciones para calcular porcentajes
+        const totalOperaciones = data.reduce((sum, item) => sum + (parseInt(item.total_operaciones) || 0), 0);
+
+        // Calcular porcentajes para cada item
+        const dataWithPercentages = data.map((item, index) => {
+          const operaciones = parseInt(item.total_operaciones) || 0;
+          const porcentaje = totalOperaciones > 0 ? (operaciones / totalOperaciones) * 100 : 0;
+
+          return {
+            ...item,
+            operaciones,
+            porcentaje,
+            color: getSliceColor(index)
+          };
+        });
+
         return (
           <div className="pie-chart">
-            {data.map((item, index) => (
-              <div key={index} className="pie-item">
-                <div className="pie-slice" style={{
-                  background: `conic-gradient(${getSliceColor(index)} 0deg ${(item.porcentaje || 0) * 3.6}deg, rgba(255,255,255,0.1) ${(item.porcentaje || 0) * 3.6}deg 360deg)`
-                }}>
-                  <div className="pie-center">
-                    <div className="pie-icon">{getTransportIcon(item.medio_transporte)}</div>
-                    <div className="pie-percentage">{item.porcentaje?.toFixed(1) || '0'}%</div>
+            {dataWithPercentages.map((item, index) => {
+              // Cada círculo muestra su porcentaje como un indicador circular
+              // El gradiente cónico muestra el porcentaje desde 0 hasta el valor correspondiente
+              const angle = item.porcentaje * 3.6; // Convertir porcentaje a grados
+
+              return (
+                <div key={index} className="pie-item">
+                  <div className="pie-slice" style={{
+                    background: `conic-gradient(
+                      from 0deg,
+                      ${item.color} 0deg,
+                      ${item.color} ${angle}deg,
+                      rgba(255,255,255,0.1) ${angle}deg,
+                      rgba(255,255,255,0.1) 360deg
+                    )`
+                  }}>
+                    <div className="pie-center">
+                      <div className="pie-icon">{getTransportIcon(item.medio_transporte)}</div>
+                      <div className="pie-percentage">{item.porcentaje.toFixed(1)}%</div>
+                    </div>
+                  </div>
+                  <div className="pie-label">
+                    <span className="transport-name">{item.medio_transporte || 'N/A'}</span>
+                    <span className="transport-count">{item.operaciones.toLocaleString()} operaciones</span>
                   </div>
                 </div>
-                <div className="pie-label">
-                  <span className="transport-name">{item.medio_transporte || 'N/A'}</span>
-                  <span className="transport-count">{item.total_operaciones?.toLocaleString() || '0'} operaciones</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         );
-      
+
       case 'barras':
         const maxOps = Math.max(...data.map(t => t.total_operaciones || 0));
         return (
@@ -260,10 +298,10 @@ const GraficosAvanzados = () => {
                   <span className="country-value">{item.total_operaciones?.toLocaleString() || '0'}</span>
                 </div>
                 <div className="bar-container">
-                  <div 
-                    className="bar-fill" 
-                    style={{ 
-                      width: `${Math.min(((item.total_operaciones || 0) / maxOps) * 100, 100)}%` 
+                  <div
+                    className="bar-fill"
+                    style={{
+                      width: `${Math.min(((item.total_operaciones || 0) / maxOps) * 100, 100)}%`
                     }}
                   ></div>
                 </div>
@@ -271,7 +309,7 @@ const GraficosAvanzados = () => {
             ))}
           </div>
         );
-      
+
       default:
         return null;
     }
@@ -279,175 +317,91 @@ const GraficosAvanzados = () => {
 
   // Función para renderizar gráfico mensual
   const renderMensualChart = () => {
-    const data = chartData.mensual;
-    const maxValue = Math.max(...data.map(m => m.total_operaciones || 0));
+    const data = chartData.mensual.map(item => ({
+      ...item,
+      mesNombre: getMonthName(item.mes).substring(0, 3),
+      exportaciones: parseFloat(item.total_operaciones || 0),
+      importaciones: parseFloat(item.total_operaciones || 0) * 0.7 // Simulado para ejemplo, ajustar con datos reales si existen
+    }));
+
+    const CustomTooltip = ({ active, payload, label }) => {
+      if (active && payload && payload.length) {
+        return (
+          <div className="custom-tooltip" style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}>
+            <p className="label" style={{ color: '#333', fontWeight: 'bold' }}>{`${label}`}</p>
+            {payload.map((entry, index) => (
+              <p key={index} style={{ color: entry.color }}>
+                {`${entry.name}: ${formatCurrency(entry.value)}`}
+              </p>
+            ))}
+          </div>
+        );
+      }
+      return null;
+    };
 
     switch (chartTypes.mensual) {
       case 'lineas':
         return (
-          <div className="basic-line-chart">
-            {/* Título básico */}
-            <div className="basic-title-section">
-              <h3 className="basic-title">REPORTE DE OPERACIONES MENSUALES</h3>
-              <div className="basic-branding">
-                <span className="basic-brand">UNIVERSIDAD DEL VALLE</span>
-                <span className="basic-subtitle">Comercio Internacional</span>
-              </div>
-            </div>
-            
-            {/* Leyenda básica */}
-            <div className="basic-legend">
-              <div className="basic-legend-item">
-                <div className="basic-legend-color exportaciones"></div>
-                <span>Exportaciones</span>
-              </div>
-              <div className="basic-legend-item">
-                <div className="basic-legend-color importaciones"></div>
-                <span>Importaciones</span>
-              </div>
-            </div>
-            
-            {/* Gráfico básico */}
-            <div className="basic-chart-container">
-              {/* Eje Y básico */}
-              <div className="basic-y-axis">
-                {[0, 100, 200, 300, 400, 500].map(value => (
-                  <div key={value} className="basic-y-tick">
-                    <span className="basic-y-label">{value}</span>
-                  </div>
-                ))}
-              </div>
-              
-              {/* Área del gráfico */}
-              <div className="basic-chart-area">
-                {/* Líneas de cuadrícula básicas */}
-                <div className="basic-grid-lines">
-                  {[0, 100, 200, 300, 400, 500].map(value => (
-                    <div 
-                      key={value} 
-                      className="basic-grid-line"
-                      style={{ bottom: `${(value / 500) * 100}%` }}
-                    ></div>
-                  ))}
-                </div>
-                
-                {/* Líneas del gráfico básicas */}
-                <svg className="basic-chart-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                  {/* Línea de Exportaciones */}
-                  <polyline
-                    className="basic-line-exportaciones"
-                    points={data.map((point, index) => 
-                      `${(index / (data.length - 1)) * 100},${100 - ((point.total_operaciones || 0) / 500) * 100}`
-                    ).join(' ')}
-                    fill="none"
-                    stroke="#8B1538"
-                    strokeWidth="2"
-                  />
-                  
-                  {/* Línea de Importaciones */}
-                  <polyline
-                    className="basic-line-importaciones"
-                    points={data.map((point, index) => 
-                      `${(index / (data.length - 1)) * 100},${100 - (((point.total_operaciones || 0) * 0.7) / 500) * 100}`
-                    ).join(' ')}
-                    fill="none"
-                    stroke="#4ecdc4"
-                    strokeWidth="2"
-                  />
-                  
-                  {/* Puntos de datos básicos */}
-                  {data.map((point, index) => (
-                    <g key={index}>
-                      <circle
-                        className="basic-data-point exportaciones"
-                        cx={(index / (data.length - 1)) * 100}
-                        cy={100 - ((point.total_operaciones || 0) / 500) * 100}
-                        r="2"
-                        fill="#8B1538"
-                      />
-                      <circle
-                        className="basic-data-point importaciones"
-                        cx={(index / (data.length - 1)) * 100}
-                        cy={100 - (((point.total_operaciones || 0) * 0.7) / 500) * 100}
-                        r="2"
-                        fill="#4ecdc4"
-                      />
-                    </g>
-                  ))}
-                </svg>
-              </div>
-              
-              {/* Eje X básico */}
-              <div className="basic-x-axis">
-                {data.map((point, index) => (
-                  <div key={index} className="basic-x-tick">
-                    <span className="basic-x-label">{getMonthName(point.mes).substring(0, 3).toUpperCase()}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+          <div style={{ width: '100%', height: 400 }}>
+            <ResponsiveContainer>
+              <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                <XAxis dataKey="mesNombre" stroke="#666" />
+                <YAxis stroke="#666" tickFormatter={(value) => `$${value / 1000}K`} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Line type="monotone" dataKey="exportaciones" name="Exportaciones" stroke="#8B1538" strokeWidth={3} activeDot={{ r: 8 }} />
+                <Line type="monotone" dataKey="importaciones" name="Importaciones" stroke="#4ecdc4" strokeWidth={3} />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         );
-      
+
       case 'area':
         return (
-          <div className="area-chart">
-            <div className="chart-grid">
-              {Array.from({ length: 12 }, (_, i) => (
-                <div key={i} className="grid-line"></div>
-              ))}
-            </div>
-            <div className="area-path">
-              {data.map((month, index) => (
-                <div 
-                  key={index} 
-                  className="area-point"
-                  style={{
-                    left: `${(index / (data.length - 1)) * 100}%`,
-                    bottom: `${((month.total_operaciones / maxValue) * 100)}%`
-                  }}
-                >
-                  <div className="point-tooltip">
-                    <div className="tooltip-month">{getMonthName(month.mes)}</div>
-                    <div className="tooltip-value">{month.total_operaciones?.toLocaleString() || '0'}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div style={{ width: '100%', height: 400 }}>
+            <ResponsiveContainer>
+              <AreaChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="colorExport" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8B1538" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#8B1538" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorImport" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#4ecdc4" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#4ecdc4" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="mesNombre" stroke="#666" />
+                <YAxis stroke="#666" tickFormatter={(value) => `$${value / 1000}K`} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Area type="monotone" dataKey="exportaciones" name="Exportaciones" stroke="#8B1538" fillOpacity={1} fill="url(#colorExport)" />
+                <Area type="monotone" dataKey="importaciones" name="Importaciones" stroke="#4ecdc4" fillOpacity={1} fill="url(#colorImport)" />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         );
-      
+
       case 'barras':
         return (
-          <div className="bar-chart monthly-bars">
-            {data.map((month, index) => {
-              const percentage = Math.min(((month.total_operaciones || 0) / maxValue) * 100, 100);
-              const monthName = getMonthName(month.mes);
-              return (
-                <div key={index} className="bar-item monthly-bar-item">
-                  <div className="bar-label">
-                    <span className="country-name">{monthName}</span>
-                    <div className="bar-values">
-                      <span className="country-value">{month.total_operaciones?.toLocaleString() || '0'}</span>
-                      <span className="country-percentage">{percentage.toFixed(1)}%</span>
-                    </div>
-                  </div>
-                  <div className="bar-container monthly-bar-container">
-                    <div 
-                      className="bar-fill monthly-bar-fill" 
-                      style={{ 
-                        width: `${percentage}%` 
-                      }}
-                    >
-                      <span className="bar-percentage-text">{percentage.toFixed(1)}%</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+          <div style={{ width: '100%', height: 400 }}>
+            <ResponsiveContainer>
+              <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                <XAxis dataKey="mesNombre" stroke="#666" />
+                <YAxis stroke="#666" tickFormatter={(value) => `$${value / 1000}K`} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend />
+                <Bar dataKey="exportaciones" name="Exportaciones" fill="#8B1538" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="importaciones" name="Importaciones" fill="#4ecdc4" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         );
-      
+
       default:
         return null;
     }
@@ -491,8 +445,8 @@ const GraficosAvanzados = () => {
         {chartData.exportaciones.map((stat, index) => (
           <div key={index} className="stat-card">
             <div className="stat-icon">
-              {stat.tipo_operacion?.includes('Exportación') ? '📤' : 
-               stat.tipo_operacion?.includes('Reexportación') ? '🔄' : '📦'}
+              {stat.tipo_operacion?.includes('Exportación') ? '📤' :
+                stat.tipo_operacion?.includes('Reexportación') ? '🔄' : '📦'}
             </div>
             <div className="stat-content">
               <h3>{stat.tipo_operacion || 'Operación'}</h3>
@@ -510,19 +464,19 @@ const GraficosAvanzados = () => {
           <div className="chart-header">
             <h2>🌍 Top Países de Destino</h2>
             <div className="chart-controls">
-              <button 
+              <button
                 className={`control-btn ${chartTypes.paises === 'barras' ? 'active' : ''}`}
                 onClick={() => changeChartType('paises', 'barras')}
               >
                 📊 Barras
               </button>
-              <button 
+              <button
                 className={`control-btn ${chartTypes.paises === 'circular' ? 'active' : ''}`}
                 onClick={() => changeChartType('paises', 'circular')}
               >
                 🥧 Circular
               </button>
-              <button 
+              <button
                 className={`control-btn ${chartTypes.paises === 'lineas' ? 'active' : ''}`}
                 onClick={() => changeChartType('paises', 'lineas')}
               >
@@ -540,13 +494,13 @@ const GraficosAvanzados = () => {
           <div className="chart-header">
             <h2>🚚 Distribución por Transporte</h2>
             <div className="chart-controls">
-              <button 
+              <button
                 className={`control-btn ${chartTypes.transporte === 'circular' ? 'active' : ''}`}
                 onClick={() => changeChartType('transporte', 'circular')}
               >
                 🥧 Circular
               </button>
-              <button 
+              <button
                 className={`control-btn ${chartTypes.transporte === 'barras' ? 'active' : ''}`}
                 onClick={() => changeChartType('transporte', 'barras')}
               >
@@ -563,34 +517,39 @@ const GraficosAvanzados = () => {
       {/* Monthly Trends */}
       <div className="trends-section">
         <div className="chart-container full-width">
-          <div className="chart-header">
-            <h2>📅 Tendencias Mensuales</h2>
-            <div className="chart-controls">
-              <button 
-                className={`control-btn ${chartTypes.mensual === 'lineas' ? 'active' : ''}`}
-                onClick={() => changeChartType('mensual', 'lineas')}
-              >
-                📈 Líneas
-              </button>
-              <button 
-                className={`control-btn ${chartTypes.mensual === 'area' ? 'active' : ''}`}
-                onClick={() => changeChartType('mensual', 'area')}
-              >
-                📊 Área
-              </button>
-              <button 
-                className={`control-btn ${chartTypes.mensual === 'barras' ? 'active' : ''}`}
-                onClick={() => changeChartType('mensual', 'barras')}
-              >
-                📊 Barras
-              </button>
+
+          <div className="chart-container-trends full-width">
+
+            <div className="chart-header">
+              <h2>📅 Tendencias Mensuales</h2>
+              <div className="chart-controls">
+                <button
+                  className={`control-btn ${chartTypes.mensual === 'lineas' ? 'active' : ''}`}
+                  onClick={() => changeChartType('mensual', 'lineas')}
+                >
+                  📈 Líneas
+                </button>
+                <button
+                  className={`control-btn ${chartTypes.mensual === 'area' ? 'active' : ''}`}
+                  onClick={() => changeChartType('mensual', 'area')}
+                >
+                  📊 Área
+                </button>
+                <button
+                  className={`control-btn ${chartTypes.mensual === 'barras' ? 'active' : ''}`}
+                  onClick={() => changeChartType('mensual', 'barras')}
+                >
+                  📊 Barras
+                </button>
+              </div>
+            </div>
+            <div className="chart-content">
+              {renderMensualChart()}
             </div>
           </div>
-          <div className="chart-content">
-            {renderMensualChart()}
-          </div>
+
         </div>
-        
+
       </div>
 
       {/* Export Options */}

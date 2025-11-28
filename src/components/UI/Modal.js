@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { FaExclamationTriangle, FaTrash, FaInfoCircle } from 'react-icons/fa';
 
 const Modal = ({
   isOpen,
@@ -101,17 +102,17 @@ export const ConfirmModal = ({
 }) => {
   const typeConfig = {
     warning: {
-      icon: '⚠️',
+      icon: <FaExclamationTriangle />,
       confirmColor: 'bg-yellow-500 hover:bg-yellow-600',
       iconColor: 'text-yellow-400'
     },
     danger: {
-      icon: '🗑️',
+      icon: <FaTrash />,
       confirmColor: 'bg-red-500 hover:bg-red-600',
       iconColor: 'text-red-400'
     },
     info: {
-      icon: 'ℹ️',
+      icon: <FaInfoCircle />,
       confirmColor: 'bg-blue-500 hover:bg-blue-600',
       iconColor: 'text-blue-400'
     }
@@ -125,7 +126,9 @@ export const ConfirmModal = ({
         <div className={`text-4xl mb-4 ${config.iconColor}`}>
           {config.icon}
         </div>
-        <p className="text-white/80 mb-6">{message}</p>
+        <div className="text-white/80 mb-6">
+          {typeof message === 'string' ? <p>{message}</p> : message}
+        </div>
         <div className="flex space-x-3 justify-center">
           <button
             onClick={onClose}

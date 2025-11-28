@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { FaCheckCircle, FaTimesCircle, FaExclamationTriangle, FaInfoCircle, FaTimes } from 'react-icons/fa';
 
 const Toast = ({ 
   message, 
@@ -30,28 +31,28 @@ const Toast = ({
 
   const typeConfig = {
     success: {
-      icon: '✅',
+      icon: FaCheckCircle,
       bgColor: 'bg-green-500/20',
       borderColor: 'border-green-400/30',
       textColor: 'text-green-200',
       iconColor: 'text-green-400'
     },
     error: {
-      icon: '❌',
+      icon: FaTimesCircle,
       bgColor: 'bg-red-500/20',
       borderColor: 'border-red-400/30',
       textColor: 'text-red-200',
       iconColor: 'text-red-400'
     },
     warning: {
-      icon: '⚠️',
+      icon: FaExclamationTriangle,
       bgColor: 'bg-yellow-500/20',
       borderColor: 'border-yellow-400/30',
       textColor: 'text-yellow-200',
       iconColor: 'text-yellow-400'
     },
     info: {
-      icon: 'ℹ️',
+      icon: FaInfoCircle,
       bgColor: 'bg-blue-500/20',
       borderColor: 'border-blue-400/30',
       textColor: 'text-blue-200',
@@ -84,7 +85,7 @@ const Toast = ({
       >
         <div className="flex items-start space-x-3">
           <span className={`text-lg ${config.iconColor} flex-shrink-0`}>
-            {config.icon}
+            <config.icon />
           </span>
           <div className="flex-1">
             <p className="text-sm font-medium">{message}</p>
@@ -93,7 +94,7 @@ const Toast = ({
             onClick={handleClose}
             className="flex-shrink-0 text-white/50 hover:text-white transition-colors"
           >
-            ✕
+            <FaTimes />
           </button>
         </div>
       </div>

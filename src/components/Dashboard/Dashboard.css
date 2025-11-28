@@ -108,11 +108,13 @@
 }
 
 .chart-container {
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   transition: transform 0.3s, box-shadow 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .chart-container:hover {
@@ -126,9 +128,9 @@
 
 .chart-container h3 {
   margin: 0 0 20px 0;
-  color: #333;
+  color: white;
   font-size: 1.2rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
   padding-bottom: 10px;
 }
 
@@ -144,14 +146,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  background: #f8f9fa;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   border-left: 4px solid #8B1538;
 }
 
 .market-name {
   font-weight: 600;
-  color: #333;
+  color: white;
 }
 
 .market-value {
@@ -161,18 +163,20 @@
 
 /* Recent Operations */
 .recent-operations {
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 30px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .recent-operations h3 {
   margin: 0 0 20px 0;
-  color: #333;
+  color: white;
   font-size: 1.2rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
   padding-bottom: 10px;
 }
 
@@ -195,7 +199,8 @@
 }
 
 .insight-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 20px;
   display: flex;
@@ -203,6 +208,7 @@
   gap: 15px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   transition: transform 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .insight-card:hover {
@@ -228,13 +234,13 @@
 
 .insight-content h4 {
   margin: 0 0 8px 0;
-  color: #333;
+  color: white;
   font-size: 1.1rem;
 }
 
 .insight-content p {
   margin: 0;
-  color: #666;
+  color: white;
   line-height: 1.5;
 }
 
@@ -300,6 +306,17 @@
   height: 100%;
 }
 
+.chart-placeholder {
+  text-align: center;
+  padding: 20px;
+  color: white;
+}
+
+.chart-placeholder p {
+  color: white;
+  opacity: 0.8;
+}
+
 .countries-list {
   display: flex;
   flex-direction: column;
@@ -322,6 +339,10 @@
   gap: 12px;
 }
 
+.country-info * {
+  color: white !important;
+}
+
 .country-rank {
   background: rgba(139, 21, 56, 0.5);
   color: white;
@@ -337,14 +358,14 @@
 }
 
 .country-name {
-  color: white;
+  color: white !important;
   font-weight: 500;
   flex: 1;
   font-size: 14px;
 }
 
 .country-value {
-  color: #ff6b6b;
+  color: white !important;
   font-weight: 600;
   text-align: right;
   font-size: 14px;
@@ -395,11 +416,21 @@
 .transport-icon {
   font-size: 20px;
   flex-shrink: 0;
+  color: white;
+}
+
+.transport-icon svg {
+  color: white;
+  fill: white;
 }
 
 .transport-info {
   flex: 1;
   min-width: 0;
+}
+
+.transport-info * {
+  color: white !important;
 }
 
 .transport-name {
@@ -418,14 +449,19 @@
   align-items: center;
   font-size: 12px;
   margin-top: 2px;
+  color: white !important;
+}
+
+.transport-stats * {
+  color: white !important;
 }
 
 .transport-count {
-  color: rgba(255, 255, 255, 0.7);
+  color: white !important;
 }
 
 .transport-percentage {
-  color: #ff6b6b;
+  color: white !important;
   font-weight: 600;
 }
 

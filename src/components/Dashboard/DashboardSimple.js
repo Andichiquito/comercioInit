@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FaTruck, FaPlane, FaShip, FaGlobe, FaChartPie, FaChartBar, FaTimesCircle, FaSync, FaUpload, FaBox, FaCheckCircle } from 'react-icons/fa';
 import Card, { StatCard, ChartCard } from '../UI/Card';
 import Button, { IconButton } from '../UI/Button';
 import LoadingSpinner from '../UI/LoadingSpinner';
-import ThemeToggle from '../Theme/ThemeToggle';
 import TopCountriesChart from '../Charts/TopCountriesChart';
 import TransportDistributionChart from '../Charts/TransportDistributionChart';
 import './DashboardSimple.css';
@@ -15,7 +15,7 @@ const DashboardSimple = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   const API_BASE = 'http://localhost:5000/api';
-  
+
   // Configurar axios con timeout
   const apiClient = axios.create({
     baseURL: API_BASE,
@@ -27,7 +27,7 @@ const DashboardSimple = () => {
 
   useEffect(() => {
     fetchData();
-    
+
     // Actualizar tiempo cada segundo
     const timeInterval = setInterval(() => {
       setCurrentTime(new Date());
@@ -40,7 +40,7 @@ const DashboardSimple = () => {
     try {
       setLoading(true);
       console.log('Iniciando fetch de datos...');
-      
+
       // Obtener múltiples datos en paralelo
       const [testResponse, statsResponse, paisesResponse, transporteResponse] = await Promise.all([
         apiClient.get('/test-db'),
@@ -48,7 +48,7 @@ const DashboardSimple = () => {
         apiClient.get('/views/query/vista_exportaciones_por_pais?limit=5'),
         apiClient.get('/views/query/vista_medio_transporte')
       ]);
-      
+
       setData({
         test: testResponse.data,
         stats: statsResponse.data,
@@ -58,7 +58,7 @@ const DashboardSimple = () => {
 
     } catch (err) {
       console.error('Error detallado:', err);
-      
+
       // Mejor manejo de errores de red
       if (err.code === 'ECONNREFUSED' || err.code === 'ERR_NETWORK') {
         setError('Error de conexión: El servidor backend no está disponible. Verifica que esté ejecutándose en el puerto 5000.');
@@ -90,23 +90,23 @@ const DashboardSimple = () => {
   };
 
   const getTransportIcon = (transport) => {
-    if (!transport) return '🚚';
+    if (!transport) return <FaTruck />;
     const transportLower = transport.toLowerCase();
-    
+
     if (transportLower.includes('aereo') || transportLower.includes('aéreo') || transportLower.includes('aerea')) {
-      return '✈️';
+      return <FaPlane />;
     } else if (transportLower.includes('maritimo') || transportLower.includes('marítimo') || transportLower.includes('maritima')) {
-      return '🚢';
+      return <FaShip />;
     } else if (transportLower.includes('terrestre')) {
-      return '🚛';
+      return <FaTruck />;
     } else if (transportLower.includes('ferroviario')) {
-      return '🚂';
+      return <FaTruck />;
     } else if (transportLower.includes('ductos')) {
-      return '🚛';
+      return <FaTruck />;
     } else if (transportLower.includes('ferroviario-maritimo') || transportLower.includes('ferroviario-marítimo')) {
-      return '🚢';
+      return <FaShip />;
     }
-    return '🚚';
+    return <FaTruck />;
   };
 
   if (loading) {
@@ -116,9 +116,9 @@ const DashboardSimple = () => {
           <LoadingSpinner size="xl" variant="primary" text="Cargando dashboard..." />
           <div className="mt-8">
             <div className="flex items-center justify-center gap-4 mb-4">
-              <img 
-                src="/download.png" 
-                alt="Universidad del Valle" 
+              <img
+                src="/download.png"
+                alt="Universidad del Valle"
                 className="h-16 w-auto"
               />
               <h2 className="text-3xl font-bold text-white gradient-text-animated">
@@ -137,10 +137,10 @@ const DashboardSimple = () => {
       <div className="min-h-screen bg-gradient-to-br from-red-500 via-pink-600 to-purple-700 flex items-center justify-center p-4">
         <Card className="max-w-md w-full text-center">
           <Card.Body>
-            <div className="text-6xl mb-4 animate-bounce">❌</div>
+            <div className="text-6xl mb-4 animate-bounce"><FaTimesCircle /></div>
             <h2 className="text-2xl font-bold text-white mb-4">Error al cargar el dashboard</h2>
             <p className="text-white/70 mb-6">{error}</p>
-            <Button onClick={fetchData} variant="primary" icon="🔄">
+            <Button onClick={fetchData} variant="primary" icon={<FaSync />}>
               Reintentar
             </Button>
           </Card.Body>
@@ -156,9 +156,9 @@ const DashboardSimple = () => {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="animate-fade-in">
             <div className="flex items-center gap-6 mb-4">
-              <img 
-                src="/download.png" 
-                alt="Universidad del Valle" 
+              <img
+                src="/download.png"
+                alt="Universidad del Valle"
                 className="h-20 w-auto"
               />
               <div>
@@ -171,7 +171,7 @@ const DashboardSimple = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-4 animate-slide-right">
             <div className="flex items-center space-x-2 bg-green-500/20 backdrop-blur-sm rounded-full px-4 py-2 border border-green-400/30">
               <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
@@ -180,7 +180,6 @@ const DashboardSimple = () => {
             <div className="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20">
               <span className="text-white font-mono text-lg">{currentTime.toLocaleTimeString()}</span>
             </div>
-            <ThemeToggle />
           </div>
         </div>
       </div>
@@ -188,7 +187,7 @@ const DashboardSimple = () => {
       {/* Status Card */}
       <Card className="mb-8 p-6 glow-effect animate-scale-in">
         <div className="flex items-center space-x-4">
-          <div className="text-4xl animate-bounce-slow">✅</div>
+          <div className="text-4xl animate-bounce-slow"><FaCheckCircle /></div>
           <div>
             <h3 className="text-2xl font-bold text-white mb-2">Conexión Exitosa</h3>
             <p className="text-white/80">
@@ -210,8 +209,8 @@ const DashboardSimple = () => {
             value={parseInt(stat.total_operaciones).toLocaleString()}
             change={`${formatCurrency(stat.valor_total_usd)}`}
             changeType="positive"
-            icon={stat.tipo_operacion?.includes('Exportación') ? '📤' : 
-                  stat.tipo_operacion?.includes('Reexportación') ? '🔄' : '📦'}
+            icon={stat.tipo_operacion?.includes('Exportación') ? <FaUpload /> :
+              stat.tipo_operacion?.includes('Reexportación') ? <FaSync /> : <FaBox />}
             trend="up"
             className="animate-slide-up"
             style={{ animationDelay: `${index * 0.1}s` }}
@@ -223,9 +222,14 @@ const DashboardSimple = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Top Countries Chart */}
         <ChartCard
-          title="🌍 Top Países de Destino"
+          title={
+            <>
+              <FaGlobe className="inline mr-2" />
+              Top Países de Destino
+            </>
+          }
           actions={[
-            <IconButton key="chart" icon="📊" variant="ghost" size="sm" />
+            <IconButton key="chart" icon={<FaChartBar />} variant="ghost" size="sm" />
           ]}
           className="animate-slide-left"
         >
@@ -234,9 +238,14 @@ const DashboardSimple = () => {
 
         {/* Transport Distribution Chart */}
         <ChartCard
-          title="🚚 Distribución por Transporte"
+          title={
+            <>
+              <FaTruck className="inline mr-2" />
+              Distribución por Transporte
+            </>
+          }
           actions={[
-            <IconButton key="pie" icon="🥧" variant="ghost" size="sm" />
+            <IconButton key="pie" icon={<FaChartPie />} variant="ghost" size="sm" />
           ]}
           className="animate-slide-right"
         >

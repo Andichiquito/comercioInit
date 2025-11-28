@@ -8,7 +8,8 @@
 }
 
 /* Loading and Error States */
-.graficos-loading, .graficos-error {
+.graficos-loading,
+.graficos-error {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -21,7 +22,7 @@
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 5px solid rgba(255,255,255,0.3);
+  border: 5px solid rgba(255, 255, 255, 0.3);
   border-top: 5px solid white;
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -29,8 +30,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .retry-button {
@@ -63,7 +69,7 @@
   font-size: 2.5rem;
   margin: 0 0 15px 0;
   font-weight: 700;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .header-description {
@@ -91,14 +97,14 @@
   display: flex;
   align-items: center;
   gap: 20px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s, box-shadow 0.3s;
   color: #333;
 }
 
 .stat-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
 }
 
 .stat-icon {
@@ -139,7 +145,7 @@
   background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   padding: 25px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   color: #333;
 }
 
@@ -442,12 +448,29 @@
   align-items: center;
 }
 
-.basic-y-tick:nth-child(1) { bottom: 0%; }
-.basic-y-tick:nth-child(2) { bottom: 20%; }
-.basic-y-tick:nth-child(3) { bottom: 40%; }
-.basic-y-tick:nth-child(4) { bottom: 60%; }
-.basic-y-tick:nth-child(5) { bottom: 80%; }
-.basic-y-tick:nth-child(6) { bottom: 100%; }
+.basic-y-tick:nth-child(1) {
+  bottom: 0%;
+}
+
+.basic-y-tick:nth-child(2) {
+  bottom: 20%;
+}
+
+.basic-y-tick:nth-child(3) {
+  bottom: 40%;
+}
+
+.basic-y-tick:nth-child(4) {
+  bottom: 60%;
+}
+
+.basic-y-tick:nth-child(5) {
+  bottom: 80%;
+}
+
+.basic-y-tick:nth-child(6) {
+  bottom: 100%;
+}
 
 .basic-y-label {
   font-size: 0.7rem;
@@ -574,7 +597,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .pie-icon {
@@ -625,7 +648,7 @@
 }
 
 .grid-line {
-  background: rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .line-path {
@@ -655,7 +678,7 @@
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   color: white;
   padding: 8px 12px;
   border-radius: 6px;
@@ -685,6 +708,14 @@
   padding: 0 20px 30px 20px;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.chart-container-trends {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  opacity: 80%;
 }
 
 /* Export Section */
@@ -790,41 +821,41 @@
   .graficos-header {
     padding: 30px 15px;
   }
-  
+
   .header-content h1 {
     font-size: 2rem;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
     padding: 20px 15px;
   }
-  
+
   .charts-section {
     grid-template-columns: 1fr;
     gap: 20px;
     padding: 0 15px 20px 15px;
   }
-  
+
   .chart-header {
     flex-direction: column;
     gap: 15px;
     align-items: stretch;
   }
-  
+
   .chart-controls {
     justify-content: center;
   }
-  
+
   .pie-chart {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   }
-  
+
   .export-controls {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .export-btn {
     width: 200px;
   }
@@ -834,27 +865,27 @@
   .header-content h1 {
     font-size: 1.8rem;
   }
-  
+
   .stat-card {
     flex-direction: column;
     text-align: center;
     gap: 15px;
   }
-  
+
   .stat-icon {
     font-size: 2.5rem;
   }
-  
+
   .pie-slice {
     width: 80px;
     height: 80px;
   }
-  
+
   .pie-center {
     width: 50px;
     height: 50px;
   }
-  
+
   .line-chart {
     height: 150px;
   }

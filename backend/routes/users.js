@@ -125,6 +125,25 @@ router.post('/', async (req, res) => {
       });
     }
 
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'El formato del email no es válido'
+      });
+    }
+
+    // Validar que el email sea solo de Gmail o Hotmail
+    const domain = email.toLowerCase().split('@')[1];
+    const allowedDomains = ['gmail.com', 'hotmail.com', 'hotmail.es', 'hotmail.com.ar', 'hotmail.com.mx'];
+    if (!allowedDomains.includes(domain)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Solo se permiten emails de Gmail o Hotmail'
+      });
+    }
+
     if (!['admin', 'cliente'].includes(rol)) {
       return res.status(400).json({
         success: false,
@@ -132,10 +151,34 @@ router.post('/', async (req, res) => {
       });
     }
 
+    // Validar longitud de contraseña
     if (password.length < 6) {
       return res.status(400).json({
         success: false,
         message: 'La contraseña debe tener al menos 6 caracteres'
+      });
+    }
+
+    if (password.length > 12) {
+      return res.status(400).json({
+        success: false,
+        message: 'La contraseña debe tener máximo 12 caracteres'
+      });
+    }
+
+    // Validar que tenga al menos una mayúscula
+    if (!/[A-Z]/.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'La contraseña debe contener al menos una mayúscula'
+      });
+    }
+
+    // Validar que tenga al menos un símbolo especial
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'La contraseña debe contener al menos un símbolo especial'
       });
     }
 
@@ -208,6 +251,25 @@ router.put('/:id', async (req, res) => {
     let paramCount = 0;
 
     if (email !== undefined) {
+      // Validar formato de email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          success: false,
+          message: 'El formato del email no es válido'
+        });
+      }
+
+      // Validar que el email sea solo de Gmail o Hotmail
+      const domain = email.toLowerCase().split('@')[1];
+      const allowedDomains = ['gmail.com', 'hotmail.com', 'hotmail.es', 'hotmail.com.ar', 'hotmail.com.mx'];
+      if (!allowedDomains.includes(domain)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Solo se permiten emails de Gmail o Hotmail'
+        });
+      }
+
       // Verificar si el email ya existe en otro usuario
       const emailCheck = await query(
         'SELECT id FROM usuarios WHERE email = $1 AND id != $2',
@@ -256,13 +318,38 @@ router.put('/:id', async (req, res) => {
       values.push(activo);
     }
 
-    if (password !== undefined) {
+    if (password !== undefined && password.trim() !== '') {
+      // Validar longitud de contraseña
       if (password.length < 6) {
         return res.status(400).json({
           success: false,
           message: 'La contraseña debe tener al menos 6 caracteres'
         });
       }
+
+      if (password.length > 12) {
+        return res.status(400).json({
+          success: false,
+          message: 'La contraseña debe tener máximo 12 caracteres'
+        });
+      }
+
+      // Validar que tenga al menos una mayúscula
+      if (!/[A-Z]/.test(password)) {
+        return res.status(400).json({
+          success: false,
+          message: 'La contraseña debe contener al menos una mayúscula'
+        });
+      }
+
+      // Validar que tenga al menos un símbolo especial
+      if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+        return res.status(400).json({
+          success: false,
+          message: 'La contraseña debe contener al menos un símbolo especial'
+        });
+      }
+
       paramCount++;
       const passwordHash = await bcrypt.hash(password, 10);
       updates.push(`password_hash = $${paramCount}`);
@@ -276,17 +363,19 @@ router.put('/:id', async (req, res) => {
       });
     }
 
-        // Agregar updated_at (no es parámetro) y el ID
-        updates.push(`updated_at = CURRENT_TIMESTAMP`);
-        paramCount++;
-        values.push(id);
+    // Agregar updated_at (no es parámetro)
+    updates.push(`updated_at = CURRENT_TIMESTAMP`);
+    
+    // Agregar el ID como último parámetro
+    paramCount++;
+    values.push(id);
 
-        const updateQuery = `
-          UPDATE usuarios 
-          SET ${updates.join(', ')}
-          WHERE id = $${paramCount}
-          RETURNING id, email, nombre, apellido, rol, activo, fecha_registro, ultimo_acceso, updated_at
-        `;
+    const updateQuery = `
+      UPDATE usuarios 
+      SET ${updates.join(', ')}
+      WHERE id = $${paramCount}
+      RETURNING id, email, nombre, apellido, rol, activo, fecha_registro, ultimo_acceso, updated_at
+    `;
 
     const result = await query(updateQuery, values);
 

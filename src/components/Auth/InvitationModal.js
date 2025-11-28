@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FaStar, FaGlobe, FaChartBar, FaSearch, FaChartLine, FaBriefcase, FaLock, FaUserPlus, FaEye } from 'react-icons/fa';
 import Login from './Login';
 import Register from './Register';
 import './Auth.css';
@@ -41,7 +42,10 @@ const InvitationModal = ({ isOpen, onClose, onLogin, onRegister }) => {
         {currentView === 'invitation' && (
           <>
             <div className="auth-modal-header">
-              <h3 className="auth-modal-title">🌟 ¡Bienvenido a GlobalTrade Analytics!</h3>
+              <h3 className="auth-modal-title">
+                <FaStar className="inline mr-2" />
+                ¡Bienvenido a GlobalTrade Analytics!
+              </h3>
               <button onClick={handleClose} className="auth-modal-close">
                 ×
               </button>
@@ -50,7 +54,7 @@ const InvitationModal = ({ isOpen, onClose, onLogin, onRegister }) => {
             <div className="auth-modal-body">
               <div className="invitation-content">
                 <div className="invitation-icon">
-                  <div className="floating-icon">🌍</div>
+                  <div className="floating-icon"><FaGlobe /></div>
                 </div>
                 
                 <div className="invitation-text">
@@ -60,19 +64,19 @@ const InvitationModal = ({ isOpen, onClose, onLogin, onRegister }) => {
                   
                   <div className="features-list">
                     <div className="feature-item">
-                      <span className="feature-icon">📊</span>
+                      <span className="feature-icon"><FaChartBar /></span>
                       <span>Dashboard interactivo con datos en tiempo real</span>
                     </div>
                     <div className="feature-item">
-                      <span className="feature-icon">🔍</span>
+                      <span className="feature-icon"><FaSearch /></span>
                       <span>Análisis detallado de mercados internacionales</span>
                     </div>
                     <div className="feature-item">
-                      <span className="feature-icon">📈</span>
+                      <span className="feature-icon"><FaChartLine /></span>
                       <span>Gráficos avanzados y reportes personalizados</span>
                     </div>
                     <div className="feature-item">
-                      <span className="feature-icon">💼</span>
+                      <span className="feature-icon"><FaBriefcase /></span>
                       <span>Herramientas para empresas y analistas</span>
                     </div>
                   </div>
@@ -87,21 +91,21 @@ const InvitationModal = ({ isOpen, onClose, onLogin, onRegister }) => {
                         onClick={handleSwitchToLogin}
                         className="auth-button primary w-full mb-3"
                       >
-                        🔐 Iniciar Sesión
+                        <FaLock className="inline mr-2" /> Iniciar Sesión
                       </button>
                       
                       <button
                         onClick={handleSwitchToRegister}
                         className="auth-button secondary w-full mb-3"
                       >
-                        📝 Crear Cuenta Gratis
+                        <FaUserPlus className="inline mr-2" /> Crear Cuenta Gratis
                       </button>
                       
                       <button
                         onClick={handleClose}
                         className="link-button w-full text-center"
                       >
-                        👀 Continuar como visitante
+                        <FaEye className="inline mr-2" /> Continuar como visitante
                       </button>
                     </div>
                   </div>
@@ -114,7 +118,10 @@ const InvitationModal = ({ isOpen, onClose, onLogin, onRegister }) => {
         {currentView === 'login' && (
           <>
             <div className="auth-modal-header">
-              <h3 className="auth-modal-title">🔐 Iniciar Sesión</h3>
+              <h3 className="auth-modal-title">
+                <FaLock className="inline mr-2" />
+                Iniciar Sesión
+              </h3>
               <div className="flex gap-2">
                 <button onClick={handleBackToInvitation} className="auth-modal-close">
                   ←
@@ -137,7 +144,10 @@ const InvitationModal = ({ isOpen, onClose, onLogin, onRegister }) => {
         {currentView === 'register' && (
           <>
             <div className="auth-modal-header">
-              <h3 className="auth-modal-title">📝 Crear Cuenta</h3>
+              <h3 className="auth-modal-title">
+                <FaUserPlus className="inline mr-2" />
+                Crear Cuenta
+              </h3>
               <div className="flex gap-2">
                 <button onClick={handleBackToInvitation} className="auth-modal-close">
                   ←

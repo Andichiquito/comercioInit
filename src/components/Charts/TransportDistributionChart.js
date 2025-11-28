@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaTruck, FaPlane, FaShip, FaTrain, FaOilCan, FaWater } from 'react-icons/fa';
 
 const TransportDistributionChart = ({ data }) => {
   // Procesar datos para el gráfico de transporte
@@ -16,25 +17,25 @@ const TransportDistributionChart = ({ data }) => {
 
   // Función para obtener el icono según el tipo de transporte
   const getTransportIcon = (transport) => {
-    if (!transport) return '🚚';
+    if (!transport) return <FaTruck />;
     const transportLower = transport.toLowerCase();
     
     if (transportLower.includes('aereo') || transportLower.includes('aéreo') || transportLower.includes('aerea')) {
-      return '✈️';
+      return <FaPlane />;
     } else if (transportLower.includes('maritimo') || transportLower.includes('marítimo') || transportLower.includes('maritima')) {
-      return '🚢';
+      return <FaShip />;
     } else if (transportLower.includes('terrestre') || transportLower.includes('carretero') || transportLower.includes('carretera')) {
-      return '🚛';
+      return <FaTruck />;
     } else if (transportLower.includes('ferroviario') || transportLower.includes('ferroviaria')) {
-      return '🚂';
+      return <FaTrain />;
     } else if (transportLower.includes('ductos')) {
-      return '🛢️';
+      return <FaOilCan />;
     } else if (transportLower.includes('fluvial')) {
-      return '🚤';
+      return <FaWater />;
     } else if (transportLower.includes('intermodal')) {
-      return '🚛';
+      return <FaTruck />;
     }
-    return '🚚';
+    return <FaTruck />;
   };
 
   // Función para formatear el nombre del transporte
@@ -68,7 +69,7 @@ const TransportDistributionChart = ({ data }) => {
       <div className="transport-list">
         {chartDataWithPercentages.map((transport, index) => (
           <div key={index} className="transport-item">
-            <div className="transport-icon">
+            <div className="transport-icon" style={{ color: 'white' }}>
               {getTransportIcon(transport.name)}
             </div>
             <div className="transport-info">

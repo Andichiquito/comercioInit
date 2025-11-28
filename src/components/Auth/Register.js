@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUserPlus, FaExclamationTriangle } from 'react-icons/fa';
 import './Auth.css';
 
 const Register = ({ onSwitchToLogin, onClose }) => {
@@ -25,19 +26,65 @@ const Register = ({ onSwitchToLogin, onClose }) => {
     setError(''); // Limpiar error al escribir
   };
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return false;
+    }
+    // Solo permitir Gmail y Hotmail
+    const domain = email.toLowerCase().split('@')[1];
+    const allowedDomains = ['gmail.com', 'hotmail.com', 'hotmail.es', 'hotmail.com.ar', 'hotmail.com.mx'];
+    return allowedDomains.includes(domain);
+  };
+
+  const validatePassword = (password) => {
+    // Máximo 12 caracteres
+    if (password.length > 12) {
+      return { valid: false, message: 'La contraseña debe tener máximo 12 caracteres' };
+    }
+    
+    // Mínimo 6 caracteres
+    if (password.length < 6) {
+      return { valid: false, message: 'La contraseña debe tener al menos 6 caracteres' };
+    }
+
+    // Al menos una mayúscula
+    if (!/[A-Z]/.test(password)) {
+      return { valid: false, message: 'La contraseña debe contener al menos una mayúscula' };
+    }
+
+    // Al menos un símbolo especial
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      return { valid: false, message: 'La contraseña debe contener al menos un símbolo especial' };
+    }
+
+    return { valid: true };
+  };
+
   const validateForm = () => {
-    if (formData.password !== formData.confirmPassword) {
-      setError('Las contraseñas no coinciden');
-      return false;
-    }
-
-    if (formData.password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
-      return false;
-    }
-
     if (!formData.nombre.trim() || !formData.apellido.trim()) {
       setError('Nombre y apellido son requeridos');
+      return false;
+    }
+
+    if (!formData.email.trim()) {
+      setError('El email es requerido');
+      return false;
+    }
+
+    if (!validateEmail(formData.email)) {
+      setError('Solo se permiten emails de Gmail o Hotmail');
+      return false;
+    }
+
+    const passwordValidation = validatePassword(formData.password);
+    if (!passwordValidation.valid) {
+      setError(passwordValidation.message);
+      return false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Las contraseñas no coinciden');
       return false;
     }
 
@@ -75,21 +122,27 @@ const Register = ({ onSwitchToLogin, onClose }) => {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h2 className="gradient-text">📝 Crear Cuenta</h2>
+          <h2 className="gradient-text">
+            <FaUserPlus className="inline mr-2" />
+            Crear Cuenta
+          </h2>
           <p>Únete a nuestra plataforma de comercio internacional</p>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
           {error && (
             <div className="error-message">
-              <span className="error-icon">⚠️</span>
+              <span className="error-icon"><FaExclamationTriangle /></span>
               {error}
             </div>
           )}
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="nombre">👤 Nombre</label>
+              <label htmlFor="nombre">
+                <FaUser className="inline mr-2" />
+                Nombre
+              </label>
               <input
                 type="text"
                 id="nombre"
@@ -104,7 +157,10 @@ const Register = ({ onSwitchToLogin, onClose }) => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="apellido">👤 Apellido</label>
+              <label htmlFor="apellido">
+                <FaUser className="inline mr-2" />
+                Apellido
+              </label>
               <input
                 type="text"
                 id="apellido"
@@ -120,7 +176,10 @@ const Register = ({ onSwitchToLogin, onClose }) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">📧 Email</label>
+            <label htmlFor="email">
+              <FaEnvelope className="inline mr-2" />
+              Email
+            </label>
             <input
               type="email"
               id="email"
@@ -135,7 +194,10 @@ const Register = ({ onSwitchToLogin, onClose }) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">🔒 Contraseña</label>
+            <label htmlFor="password">
+              <FaLock className="inline mr-2" />
+              Contraseña <span className="text-red-400">*</span>
+            </label>
             <div className="password-input-container">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -144,8 +206,9 @@ const Register = ({ onSwitchToLogin, onClose }) => {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                maxLength={12}
                 className="form-input"
-                placeholder="Mínimo 6 caracteres"
+                placeholder="Ingresa tu contraseña"
                 disabled={loading}
               />
               <button
@@ -154,13 +217,24 @@ const Register = ({ onSwitchToLogin, onClose }) => {
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={loading}
               >
-                {showPassword ? '🙈' : '👁️'}
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
+            </div>
+            <div className="password-requirements">
+              <p className="requirement-text">La contraseña debe cumplir:</p>
+              <ul className="requirement-list">
+                <li>Máximo 12 caracteres</li>
+                <li>Al menos una mayúscula</li>
+                <li>Al menos un símbolo especial (!@#$%^&*...)</li>
+              </ul>
             </div>
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirmPassword">🔒 Confirmar Contraseña</label>
+            <label htmlFor="confirmPassword">
+              <FaLock className="inline mr-2" />
+              Confirmar Contraseña
+            </label>
             <div className="password-input-container">
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
@@ -179,7 +253,7 @@ const Register = ({ onSwitchToLogin, onClose }) => {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 disabled={loading}
               >
-                {showConfirmPassword ? '🙈' : '👁️'}
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
           </div>
@@ -196,7 +270,8 @@ const Register = ({ onSwitchToLogin, onClose }) => {
               </>
             ) : (
               <>
-                🎉 Crear Cuenta
+                <FaUserPlus className="inline mr-2" />
+                Crear Cuenta
               </>
             )}
           </button>

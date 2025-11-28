@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { FaChartBar, FaGlobe, FaClipboardList, FaChartLine, FaSearch, FaInfoCircle, FaUser, FaSignOutAlt, FaCog, FaUpload, FaBars, FaTimes, FaMoon, FaSun } from 'react-icons/fa';
 import Login from '../Auth/Login';
 import Register from '../Auth/Register';
 import Modal from '../UI/Modal';
@@ -35,40 +36,35 @@ const ModernHeader = () => {
   const navItems = [
     {
       path: '/',
-      icon: '📊',
+      icon: FaChartBar,
       label: 'Dashboard',
       sublabel: null
     },
     {
       path: '/panel-comercio',
-      icon: '🌍',
+      icon: FaGlobe,
       label: 'Panel',
       sublabel: 'Comercio'
     },
     {
       path: '/datos-comerciales',
-      icon: '📋',
+      icon: FaClipboardList,
       label: 'Datos',
       sublabel: 'Comerciales'
     },
     {
       path: '/graficos',
-      icon: '📈',
+      icon: FaChartLine,
       label: 'Gráficos',
       sublabel: 'Avanzados'
     },
     {
       path: '/analisis',
-      icon: '🔍',
+      icon: FaSearch,
       label: 'Análisis',
       sublabel: 'de'
     },
-    {
-      path: '/about',
-      icon: 'ℹ️',
-      label: 'Quiénes',
-      sublabel: 'Somos'
-    }
+
   ];
 
   return (
@@ -78,9 +74,9 @@ const ModernHeader = () => {
           {/* Brand Section */}
           <div className="brand-section">
             <div className="brand-logo">
-              <img 
-                src="/download.png" 
-                alt="Universidad del Valle" 
+              <img
+                src="/download.png"
+                alt="Universidad del Valle"
                 className="univalle-logo"
               />
             </div>
@@ -99,7 +95,7 @@ const ModernHeader = () => {
                 className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
               >
                 <div className="nav-icon">
-                  {item.icon}
+                  <item.icon />
                 </div>
                 <div className="nav-text">
                   <div className="nav-label">{item.label}</div>
@@ -109,7 +105,7 @@ const ModernHeader = () => {
                 </div>
               </Link>
             ))}
-            
+
             {/* Admin Link - Solo visible para administradores */}
             {user && isAdmin() && (
               <Link
@@ -117,7 +113,7 @@ const ModernHeader = () => {
                 className={`nav-item ${location.pathname === '/admin' ? 'active' : ''}`}
               >
                 <div className="nav-icon">
-                  ⚙️
+                  <FaCog />
                 </div>
                 <div className="nav-text">
                   <div className="nav-label">Admin</div>
@@ -130,23 +126,13 @@ const ModernHeader = () => {
           <div className="actions-section">
             {/* Theme Toggle */}
             <div className="theme-toggle-container">
-              <button
-                onClick={toggleTheme}
-                className={`theme-toggle ${isDarkMode ? 'dark' : 'light'}`}
-                aria-label="Toggle theme"
-              >
-                <div className="toggle-track">
-                  <div className="toggle-thumb">
-                    {isDarkMode ? '🌙' : '☀️'}
-                  </div>
-                </div>
-              </button>
+
             </div>
 
             {/* Auth Buttons */}
             {user ? (
               <div className="user-menu-container">
-                <button 
+                <button
                   className="user-button"
                   onClick={() => setShowUserMenu(!showUserMenu)}
                 >
@@ -160,7 +146,7 @@ const ModernHeader = () => {
                     </div>
                   </div>
                 </button>
-                
+
                 {showUserMenu && (
                   <div className="user-dropdown">
                     <div className="dropdown-header">
@@ -178,14 +164,14 @@ const ModernHeader = () => {
               </div>
             ) : (
               <div className="auth-buttons">
-                <button 
+                <button
                   className="login-button"
                   onClick={() => setShowLogin(true)}
                 >
                   <div className="button-icon">🔐</div>
                   <span>Iniciar Sesión</span>
                 </button>
-                <button 
+                <button
                   className="register-button"
                   onClick={() => setShowRegister(true)}
                 >
@@ -200,7 +186,7 @@ const ModernHeader = () => {
 
       {/* Modales de autenticación */}
       <Modal isOpen={showLogin} onClose={() => setShowLogin(false)}>
-        <Login 
+        <Login
           onSwitchToRegister={() => {
             setShowLogin(false);
             setShowRegister(true);
@@ -210,7 +196,7 @@ const ModernHeader = () => {
       </Modal>
 
       <Modal isOpen={showRegister} onClose={() => setShowRegister(false)}>
-        <Register 
+        <Register
           onSwitchToLogin={() => {
             setShowRegister(false);
             setShowLogin(true);

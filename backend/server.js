@@ -78,6 +78,13 @@ app.use('/api/auth', authRoutes);
 const usersRoutes = require('./routes/users');
 app.use('/api/users', usersRoutes);
 
+// Importar y usar rutas para carga de datos
+const dataUploadRoutes = require('./routes/data-upload');
+app.use('/api/data', dataUploadRoutes);
+console.log('✅ Ruta de carga de datos registrada: /api/data');
+console.log('   - POST /api/data/upload - Cargar datos desde Excel');
+console.log('   - GET /api/data/test - Probar ruta');
+
 // Manejo de errores
 app.use((err, req, res, next) => {
   console.error('❌ Error:', err.stack);

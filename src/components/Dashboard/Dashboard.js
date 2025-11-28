@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FaChartLine, FaChartBar, FaGlobe, FaBriefcase, FaShip, FaTruck, FaClock, FaLightbulb, FaLock, FaExclamationTriangle } from 'react-icons/fa';
 import MetricCard from '../Metrics/MetricCard';
 import ExportChart from '../Charts/ExportChart';
 import TopCountriesChart from '../Charts/TopCountriesChart';
@@ -155,49 +156,49 @@ const Dashboard = () => {
           title="Exportaciones Totales"
           value={formatCurrency(totalExports?.valor_total_usd || 0)}
           subtitle={`${formatNumber(totalExports?.total_operaciones || 0)} operaciones`}
-          icon="📈"
+          icon={<FaChartLine />}
           color="blue"
         />
         <MetricCard
           title="Crecimiento Anual"
           value="+12.8%"
           subtitle="vs año anterior"
-          icon="📊"
+          icon={<FaChartBar />}
           color="green"
         />
         <MetricCard
           title="Países Socios"
           value={formatNumber(totalCountries)}
           subtitle="destinos comerciales"
-          icon="🌍"
+          icon={<FaGlobe />}
           color="purple"
         />
         <MetricCard
           title="Transacciones Mensuales"
           value={formatNumber(Math.round(totalOperations / 12))}
           subtitle="promedio mensual"
-          icon="💼"
+          icon={<FaBriefcase />}
           color="orange"
         />
         <MetricCard
           title="Envíos Marítimos"
           value={formatNumber(transportData.find(t => t.medio_transporte?.includes('MARITIMO'))?.total_operaciones || 0)}
           subtitle="operaciones marítimas"
-          icon="🚢"
+          icon={<FaShip />}
           color="teal"
         />
         <MetricCard
           title="Envíos Terrestres"
           value={formatNumber(transportData.find(t => t.medio_transporte?.includes('TERRESTRE'))?.total_operaciones || 0)}
           subtitle="operaciones terrestres"
-          icon="🚛"
+          icon={<FaTruck />}
           color="brown"
         />
         <MetricCard
           title="Tiempo de Entrega"
           value="98.7%"
           subtitle="cumplimiento"
-          icon="⏱️"
+          icon={<FaClock />}
           color="red"
         />
       </div>
@@ -206,18 +207,18 @@ const Dashboard = () => {
       <div className="charts-section">
         <div className="chart-row">
           <div className="chart-container">
-            <h3>🌍 Top Países de Destino</h3>
+            <h3><FaGlobe className="inline mr-2" /> Top Países de Destino</h3>
             <TopCountriesChart data={countryData} />
           </div>
           <div className="chart-container">
-            <h3>🚚 Distribución por Transporte</h3>
+            <h3><FaTruck className="inline mr-2" /> Distribución por Transporte</h3>
             <TransportDistributionChart data={transportData} />
           </div>
         </div>
 
         <div className="chart-row">
           <div className="chart-container large">
-            <h3>📈 Tendencia Comercial Trimestral</h3>
+            <h3><FaChartLine className="inline mr-2" /> Tendencia Comercial Trimestral</h3>
             <ExportChart data={exportData} />
           </div>
           <div className="chart-container">
@@ -242,17 +243,17 @@ const Dashboard = () => {
 
       {/* Market Insights */}
       <div className="insights-section">
-        <h3>💡 Insights del Mercado</h3>
+        <h3><FaLightbulb className="inline mr-2" /> Insights del Mercado</h3>
         <div className="insights-grid">
           <div className="insight-card blue">
-            <div className="insight-icon">💡</div>
+            <div className="insight-icon"><FaLightbulb /></div>
             <div className="insight-content">
               <h4>Tendencia Alcista</h4>
               <p>El sector tecnológico muestra un crecimiento del 23% en exportaciones este trimestre.</p>
             </div>
           </div>
           <div className="insight-card yellow">
-            <div className="insight-icon">⚠️</div>
+            <div className="insight-icon"><FaExclamationTriangle /></div>
             <div className="insight-content">
               <h4>Mercado Emergente</h4>
               <p>Vietnam se posiciona como nuevo destino estratégico para textiles y manufactura.</p>
@@ -271,7 +272,7 @@ const Dashboard = () => {
       {/* Limited Access Banner */}
       <div className="limited-access">
         <div className="access-content">
-          <div className="access-icon">🔒</div>
+          <div className="access-icon"><FaLock /></div>
           <div className="access-text">
             <h4>Acceso Limitado!</h4>
             <p>Esta es una versión demo. Inicia sesión para acceder a datos completos, análisis avanzados y reportes personalizados.</p>

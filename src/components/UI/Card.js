@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaArrowUp, FaArrowDown, FaArrowRight, FaChartBar, FaInfoCircle, FaCheckCircle, FaExclamationTriangle, FaTimesCircle } from 'react-icons/fa';
 
 const Card = ({
   children,
@@ -79,10 +80,10 @@ export const StatCard = ({
   };
 
   const trendIcons = {
-    up: '📈',
-    down: '📉',
-    stable: '➡️',
-    neutral: '📊'
+    up: <FaArrowUp />,
+    down: <FaArrowDown />,
+    stable: <FaArrowRight />,
+    neutral: <FaChartBar />
   };
 
   return (
@@ -196,10 +197,10 @@ export const NotificationCard = ({
   };
 
   const typeIcons = {
-    info: 'ℹ️',
-    success: '✅',
-    warning: '⚠️',
-    error: '❌'
+    info: <FaInfoCircle />,
+    success: <FaCheckCircle />,
+    warning: <FaExclamationTriangle />,
+    error: <FaTimesCircle />
   };
 
   return (

@@ -18,10 +18,53 @@ router.post('/register', async (req, res) => {
       });
     }
 
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'El formato del email no es válido'
+      });
+    }
+
+    // Validar que el email sea solo de Gmail o Hotmail
+    const domain = email.toLowerCase().split('@')[1];
+    const allowedDomains = ['gmail.com', 'hotmail.com', 'hotmail.es', 'hotmail.com.ar', 'hotmail.com.mx'];
+    if (!allowedDomains.includes(domain)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Solo se permiten emails de Gmail o Hotmail'
+      });
+    }
+
+    // Validar longitud de contraseña
     if (password.length < 6) {
       return res.status(400).json({
         success: false,
         message: 'La contraseña debe tener al menos 6 caracteres'
+      });
+    }
+
+    if (password.length > 12) {
+      return res.status(400).json({
+        success: false,
+        message: 'La contraseña debe tener máximo 12 caracteres'
+      });
+    }
+
+    // Validar que tenga al menos una mayúscula
+    if (!/[A-Z]/.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'La contraseña debe contener al menos una mayúscula'
+      });
+    }
+
+    // Validar que tenga al menos un símbolo especial
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message: 'La contraseña debe contener al menos un símbolo especial'
       });
     }
 
@@ -93,6 +136,15 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Email y contraseña son requeridos'
+      });
+    }
+
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'El formato del email no es válido'
       });
     }
 

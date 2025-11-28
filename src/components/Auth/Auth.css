@@ -43,6 +43,10 @@
   @apply opacity-50 cursor-not-allowed;
 }
 
+.form-input.error {
+  @apply border-red-400 focus:ring-red-400 focus:border-red-400;
+}
+
 .password-input-container {
   @apply relative;
 }
@@ -61,6 +65,26 @@
 
 .error-icon {
   @apply text-lg;
+}
+
+.field-error {
+  @apply text-red-300 text-xs mt-1 block;
+}
+
+.password-requirements {
+  @apply mt-2 p-3 bg-white/5 border border-white/10 rounded-lg;
+}
+
+.requirement-text {
+  @apply text-white/80 text-xs font-medium mb-2;
+}
+
+.requirement-list {
+  @apply list-disc list-inside space-y-1 text-white/70 text-xs;
+}
+
+.requirement-list li {
+  @apply ml-2;
 }
 
 .auth-button {

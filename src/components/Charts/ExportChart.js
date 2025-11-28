@@ -5,7 +5,7 @@ const ExportChart = ({ data }) => {
   // Process data for the chart
   const processData = (rawData) => {
     if (!rawData || rawData.length === 0) return [];
-    
+
     // Group by month and year
     const grouped = rawData.reduce((acc, item) => {
       const key = `${item.año}-${item.mes}`;
@@ -17,7 +17,7 @@ const ExportChart = ({ data }) => {
           reexportaciones: 0
         };
       }
-      
+
       if (item.tipo_operacion?.includes('EXPORTACION')) {
         acc[key].exportaciones += parseFloat(item.valor_total_usd || 0);
       } else if (item.tipo_operacion?.includes('IMPORTACION')) {
@@ -25,10 +25,10 @@ const ExportChart = ({ data }) => {
       } else if (item.tipo_operacion?.includes('REEXPORTACION')) {
         acc[key].reexportaciones += parseFloat(item.valor_total_usd || 0);
       }
-      
+
       return acc;
     }, {});
-    
+
     return Object.values(grouped).sort((a, b) => a.periodo.localeCompare(b.periodo));
   };
 
@@ -72,40 +72,26 @@ const ExportChart = ({ data }) => {
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-          <XAxis 
-            dataKey="periodo" 
-            stroke="#666"
-            fontSize={12}
-            tick={{ fontSize: 11 }}
-          />
-          <YAxis 
-            stroke="#666"
-            fontSize={12}
-            tick={{ fontSize: 11 }}
-            tickFormatter={formatCurrency}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend />
-          <Line 
-            type="monotone" 
-            dataKey="exportaciones" 
-            stroke="#2196F3" 
+          <Line
+            type="monotone"
+            dataKey="exportaciones"
+            stroke="#2196F3"
             strokeWidth={3}
             dot={{ fill: '#2196F3', strokeWidth: 2, r: 4 }}
             name="Exportaciones"
           />
-          <Line 
-            type="monotone" 
-            dataKey="importaciones" 
-            stroke="#F44336" 
+          <Line
+            type="monotone"
+            dataKey="importaciones"
+            stroke="#F44336"
             strokeWidth={3}
             dot={{ fill: '#F44336', strokeWidth: 2, r: 4 }}
             name="Importaciones"
           />
-          <Line 
-            type="monotone" 
-            dataKey="reexportaciones" 
-            stroke="#4CAF50" 
+          <Line
+            type="monotone"
+            dataKey="reexportaciones"
+            stroke="#4CAF50"
             strokeWidth={3}
             dot={{ fill: '#4CAF50', strokeWidth: 2, r: 4 }}
             name="Reexportaciones"

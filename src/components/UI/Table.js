@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FaChartBar, FaSearch } from 'react-icons/fa';
 
 const Table = ({
   data = [],
@@ -26,7 +27,7 @@ const Table = ({
   if (data.length === 0) {
     return (
       <div className={`glass-card p-8 text-center ${className}`}>
-        <div className="text-4xl mb-4">📊</div>
+        <div className="text-4xl mb-4"><FaChartBar /></div>
         <p className="text-white/70">{emptyMessage}</p>
       </div>
     );
@@ -114,7 +115,7 @@ export const DataTable = ({
               className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
             />
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50">
-              🔍
+              <FaSearch />
             </div>
           </div>
         </div>

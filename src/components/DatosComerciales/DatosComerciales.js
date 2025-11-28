@@ -177,19 +177,6 @@ const DatosComerciales = () => {
     });
   };
 
-  const getTransportIcon = (transport) => {
-    if (!transport) return '🚚';
-    
-    const transportLower = transport.toLowerCase();
-    if (transportLower.includes('maritimo') || transportLower.includes('marítimo')) {
-      return '🚢';
-    } else if (transportLower.includes('aereo') || transportLower.includes('aéreo')) {
-      return '✈️';
-    } else if (transportLower.includes('terrestre')) {
-      return '🚛';
-    }
-    return '🚚';
-  };
 
   // Paginación
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
@@ -222,7 +209,7 @@ const DatosComerciales = () => {
   return (
     <div className="datos-comerciales">
       <div className="datos-header">
-        <h1>📊 Datos Comerciales Completos</h1>
+        <h1>Datos Comerciales Completos</h1>
         <p>Base de datos con {data.length.toLocaleString()} registros comerciales</p>
       </div>
 
@@ -230,7 +217,7 @@ const DatosComerciales = () => {
       <div className="filters-section">
         <div className="filters-grid">
           <div className="filter-group">
-            <label>🔍 Búsqueda General</label>
+            <label>Búsqueda General</label>
             <input
               type="text"
               placeholder="Buscar por país, producto, aduana..."
@@ -241,7 +228,7 @@ const DatosComerciales = () => {
           </div>
 
           <div className="filter-group">
-            <label>🌍 País Destino</label>
+            <label>País Destino</label>
             <select
               value={filters.pais}
               onChange={(e) => handleFilterChange('pais', e.target.value)}
@@ -255,7 +242,7 @@ const DatosComerciales = () => {
           </div>
 
           <div className="filter-group">
-            <label>📦 Producto</label>
+            <label>Producto</label>
             <input
               type="text"
               placeholder="Código o descripción"
@@ -266,7 +253,7 @@ const DatosComerciales = () => {
           </div>
 
           <div className="filter-group">
-            <label>📋 Tipo de Operación</label>
+            <label>Tipo de Operación</label>
             <select
               value={filters.tipoOperacion}
               onChange={(e) => handleFilterChange('tipoOperacion', e.target.value)}
@@ -280,7 +267,7 @@ const DatosComerciales = () => {
           </div>
 
           <div className="filter-group">
-            <label>📅 Fecha Desde</label>
+            <label>Fecha Desde</label>
             <input
               type="date"
               value={filters.fechaDesde}
@@ -290,7 +277,7 @@ const DatosComerciales = () => {
           </div>
 
           <div className="filter-group">
-            <label>📅 Fecha Hasta</label>
+            <label>Fecha Hasta</label>
             <input
               type="date"
               value={filters.fechaHasta}
@@ -302,7 +289,7 @@ const DatosComerciales = () => {
 
         <div className="filters-actions">
           <button onClick={clearFilters} className="clear-filters-btn">
-            🗑️ Limpiar Filtros
+            Limpiar Filtros
           </button>
           <div className="results-count">
             <div className="results-main">
@@ -322,7 +309,7 @@ const DatosComerciales = () => {
       {/* Tabla de Datos */}
       <div className="data-table-container">
         <div className="table-header">
-          <h3>📋 Registros Comerciales</h3>
+          <h3>Registros Comerciales</h3>
        
         </div>
 
@@ -330,14 +317,14 @@ const DatosComerciales = () => {
           <table className="data-table">
             <thead>
               <tr>
-                <th>📅 Fecha</th>
-                <th>📦 Producto</th>
-                <th>🌍 País Destino</th>
-                <th>⚖️ Cantidad</th>
-                <th>💰 Valor (USD)</th>
-                <th>🚚 Transporte</th>
-                <th>🏢 Aduana</th>
-                <th>✅ Estado</th>
+                <th>Fecha</th>
+                <th>Producto</th>
+                <th>País Destino</th>
+                <th>Cantidad</th>
+                <th>Valor (USD)</th>
+                <th>Transporte</th>
+                <th>Aduana</th>
+                <th>Estado</th>
               </tr>
             </thead>
             <tbody>
@@ -367,9 +354,6 @@ const DatosComerciales = () => {
                   </td>
                   <td className="transport-cell">
                     <div className="transport-info">
-                      <span className="transport-icon">
-                        {getTransportIcon(item.medio_transporte)}
-                      </span>
                       <span className="transport-text">
                         {item.medio_transporte || 'N/A'}
                       </span>
