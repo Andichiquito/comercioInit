@@ -1,11 +1,6 @@
 
 
 
-
-
-Test PLAN
-
-
 Comercio Internacional – Proyecto de sistemas III
 
 
