@@ -126,7 +126,7 @@ const ModernHeader = () => {
           <div className="actions-section">
             {/* Theme Toggle */}
             <div className="theme-toggle-container">
-
+            
             </div>
 
             {/* Auth Buttons */}

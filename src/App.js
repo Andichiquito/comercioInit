@@ -63,74 +63,85 @@ function AppContent() {
       <div className="main-content">
         <Routes>
           {/* Dashboard principal - acceso limitado para invitados */}
-          <Route
-            path="/"
+          <Route 
+            path="/" 
             element={
               <LimitedAccessView showLimitedData={true}>
                 <DashboardSimple />
               </LimitedAccessView>
-            }
+            } 
           />
-
+          
           {/* Panel de comercio - requiere autenticación */}
-          <Route
-            path="/panel-comercio"
+          <Route 
+            path="/panel-comercio" 
             element={
               <ProtectedRoute requireAuth={true}>
                 <InternationalTradePanel />
               </ProtectedRoute>
-            }
+            } 
           />
-
+          
           {/* Datos comerciales - requiere autenticación */}
-          <Route
-            path="/datos-comerciales"
+          <Route 
+            path="/datos-comerciales" 
             element={
               <ProtectedRoute requireAuth={true}>
                 <DatosComerciales />
               </ProtectedRoute>
-            }
+            } 
           />
-
+          
           {/* Gráficos avanzados - requiere autenticación */}
-          <Route
-            path="/graficos"
+          <Route 
+            path="/graficos" 
             element={
               <ProtectedRoute requireAuth={true}>
                 <GraficosAvanzados />
               </ProtectedRoute>
-            }
+            } 
           />
-
+          
           {/* Análisis de mercados - requiere autenticación */}
-          <Route
-            path="/analisis"
+          <Route 
+            path="/analisis" 
             element={
               <ProtectedRoute requireAuth={true}>
                 <AnalisisMercados />
               </ProtectedRoute>
-            }
+            } 
           />
-
+          
           {/* Panel de administración - requiere rol de admin */}
-          <Route
-            path="/admin"
+          <Route 
+            path="/admin" 
             element={
               <ProtectedRoute requireAuth={true} allowedRoles={['admin']}>
                 <AdminPanel />
               </ProtectedRoute>
-            }
+            } 
+          />
+          
+          {/* Página about - acceso público */}
+          <Route 
+            path="/about" 
+            element={
+              <div style={{padding: '100px 20px', textAlign: 'center', color: 'white'}}>
+                <h1>ℹ️ Quiénes Somos</h1>
+                <p>Próximamente...</p>
+              </div>
+            } 
           />
         </Routes>
       </div>
-
+      
       <InvitationModal
         isOpen={showInvitation}
         onClose={handleCloseInvitation}
         onLogin={handleLogin}
         onRegister={handleRegister}
       />
-
+      
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );

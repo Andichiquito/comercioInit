@@ -4,6 +4,7 @@ import { FaTruck, FaPlane, FaShip, FaGlobe, FaChartPie, FaChartBar, FaTimesCircl
 import Card, { StatCard, ChartCard } from '../UI/Card';
 import Button, { IconButton } from '../UI/Button';
 import LoadingSpinner from '../UI/LoadingSpinner';
+import ThemeToggle from '../Theme/ThemeToggle';
 import TopCountriesChart from '../Charts/TopCountriesChart';
 import TransportDistributionChart from '../Charts/TransportDistributionChart';
 import './DashboardSimple.css';

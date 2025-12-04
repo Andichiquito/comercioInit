@@ -1,0 +1,11 @@
+IMPORTANTE: FORMATO DE LOS MANUALES
+
+Los manuales en esta carpeta están en formato Markdown (.md). 
+Este es un formato de texto estándar que se puede abrir con cualquier editor de texto (Bloc de notas, VS Code, etc.).
+
+No se pudieron convertir automáticamente a Microsoft Word (.docx) porque no está instalada la herramienta necesaria en este entorno.
+
+Para verlos correctamente:
+1. Ábralos con Visual Studio Code (recomendado).
+2. O copie el contenido y péguelo en un visor de Markdown online.
+3. O ábralos con el Bloc de Notas para leer el texto sin formato.
