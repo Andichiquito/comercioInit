@@ -6,8 +6,26 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:3002',
+  process.env.FRONTEND_URL, // Dominio de Vercel
+  'https://*.vercel.app' // Cualquier subdominio de Vercel
+].filter(Boolean);
+
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'], // URLs del frontend React
+  origin: function (origin, callback) {
+    // Permitir requests sin origin (como apps móviles o curl)
+    if (!origin) return callback(null, true);
+
+    // Verificar si el origin está en la lista o termina en .vercel.app
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
