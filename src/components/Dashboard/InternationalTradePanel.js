@@ -11,7 +11,7 @@ const InternationalTradePanel = () => {
   const [countryData, setCountryData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
 
-  const API_BASE = 'http://localhost:5000/api';
+  const API_BASE = API_URL;
 
   const apiClient = axios.create({
     baseURL: API_BASE,

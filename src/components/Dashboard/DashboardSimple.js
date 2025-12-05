@@ -15,7 +15,7 @@ const DashboardSimple = () => {
   const [data, setData] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  const API_BASE = 'http://localhost:5000/api';
+  const API_BASE = API_URL;
 
   // Configurar axios con timeout
   const apiClient = axios.create({

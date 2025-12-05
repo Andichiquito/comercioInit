@@ -20,7 +20,7 @@ const GraficosAvanzados = () => {
     mensual: 'lineas' // 'lineas', 'area', 'barras'
   });
 
-  const API_BASE = 'http://localhost:5000/api';
+  const API_BASE = API_URL;
 
   useEffect(() => {
     fetchChartData();

@@ -25,7 +25,7 @@ const DatosComerciales = () => {
   const [productos, setProductos] = useState([]);
   const [tiposOperacion, setTiposOperacion] = useState([]);
 
-  const API_BASE = 'http://localhost:5000/api';
+  const API_BASE = API_URL;
 
   useEffect(() => {
     fetchData();

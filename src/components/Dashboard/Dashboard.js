@@ -18,7 +18,7 @@ const Dashboard = () => {
   const [transportData, setTransportData] = useState([]);
   const [recentOps, setRecentOps] = useState([]);
 
-  const API_BASE = 'http://localhost:5000/api';
+  const API_BASE = API_URL;
   
   // Configurar axios con timeout
   const apiClient = axios.create({
