@@ -1,70 +1,190 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
 
-In the project directory, you can run:
+Comercio Internacional – Proyecto de sistemas III
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Integrantes: ANDRES GUZMAN PUENTE
+                           VICTOR HUGO CLAROS GUTIERREZ
+Docente: Gaston Silva
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+                               Gestion 2-2025
+1. Integrantes - Roles
+- Andres Guzman Puente – Team Leader | UI/UX Designer | QA Tester | FrontEnd Developer
+- Victor Hugo Claros Gutierrez – Backend Developer | DevOps | UI/UX Designer | BackEnd Developer | Arquitecto de Software
+2. Introducción
+El Sistema de Comercio Internacional es una plataforma web diseñada para la gestión, análisis y visualización de datos relacionados con comercio exterior.
+Permite cargar datos desde Excel, procesarlos automáticamente, generar gráficos interactivos, administrar usuarios y realizar consultas complejas.
+3. Descripción / Objetivo del Proyecto
+El objetivo es centralizar y analizar información de comercio internacional, facilitando la toma de decisiones mediante dashboards, KPIs, estadísticas, filtros avanzados,
+carga masiva de datos y funcionalidades administrativas.
+4. Requisitos Funcionales del Sistema
+1. Cargar archivos Excel con datos comerciales.
+2. Procesar automáticamente columnas, tipos de datos y filas.
+3. Generar KPIs y estadísticas.
+4. Mostrar dashboards gráficos.
+5. Gestión de usuarios (CRUD).
+6. Autenticación JWT.
+7. Sistema de roles.
+8. Exportar datos.
+9. Vistas protegidas.
+10. Panel de administración.
+5. Arquitectura del Software
+El sistema utiliza una arquitectura por capas:
+- Frontend: React, gráficos con Chart.js.
+- Backend: Node.js, controladores, rutas, JWT, bcrypt.
+- Base de Datos: PostgreSQL con pg.Pool.
+- Patrones: MVC, Repository Pattern, DTOs, Token-Based Auth.
+Comunicación: Frontend → API REST → PostgreSQL
+6. Base de Datos
+a. Diagrama textual:
+- usuarios(id, nombre, email, password_hash, rol, estado)
+- hoja1(id, pais, producto, anio, mes, valor, transporte) 
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+b. Carpeta en GIT:
+database/
+   01_schema.sql
+   02_seed.sql
+   03_views.sql
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+c. Script Simple:
+CREATE TABLE usuarios (
+  id SERIAL PRIMARY KEY,
+  nombre VARCHAR(120),
+  email VARCHAR(120) UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  rol VARCHAR(20) NOT NULL,
+  estado BOOLEAN DEFAULT true
+);
 
-### `npm run eject`
+CREATE TABLE hoja1 (
+  id SERIAL PRIMARY KEY,
+  pais VARCHAR(120),
+  producto VARCHAR(120),
+  anio INT,
+  mes INT,
+  valor NUMERIC(18,2),
+  transporte VARCHAR(80)
+);
+8. Roles y Credenciales
+Admin:
+ - Usuario: admin
+ - Contraseña: Admin123*
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+User:
+ - Usuario: user1
+ - Contraseña: User123*
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Base de Datos:
+ - Usuario: postgres
+ - Contraseña: admin123
+ - Base: comercio
+9. Requisitos del Sistema
+Cliente:
+Hardware mínimo: 4GB RAM, CPU dual core
+Software: Navegador actualizado
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Servidor:
+Hardware: 2–4 vCPU, 4–8GB RAM
+Software: Ubuntu Server 22.04, Docker, PostgreSQL 17, Docker Compose
+10. Instalación y Configuración
+1. Clonar repositorio
+2. Instalar dependencias con npm install
+3. Crear archivo .env con credenciales
+4. Ejecutar npm run dev para modo desarrollo
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Backend variables:
+DB_USER=postgres
+DB_PASS=admin123
+DB_HOST=localhost
+JWT_SECRET=supersecret
+11. Procedimiento de Hosting en AWS
+Sitio web: Construcción con npm run build
+API backend en puerto 5000
+BD en contenedor postgres
 
-## Learn More
+PASOS AWS:
+1. Crear instancia EC2
+2. Instalar Docker:
+   sudo apt install docker.io
+3. Instalar docker-compose
+4. Clonar proyecto
+5. Ejecutar docker-compose up -d --build
+6. Verificar docker ps
+12. GIT
+Rama principal:
+ - main
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Ramas por developer:
+ - feature/frontend
+ - feature/backend
+ - fix/bug-xxx
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Entregables:
+ - Build en /build
+ - Base de datos en /database
+13. Dockerizado
+Proceso:
+docker-compose.yml con servicios backend, frontend y postgres.
 
-### Code Splitting
+Ejecución:
+docker-compose up -d --build
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Credenciales:
+BD: postgres / admin123
+Sistema: admin / Admin123*
+14. Personalización y Configuración
+Personalizable:
+- Colores del dashboard
+- Logos
+- Nombre del sistema
+- Configuración de .env
+- Columnas esperadas en carga masiva
+15. Seguridad
+Incluye:
+- JWT
+- Bcrypt
+- Rate limiting
+- Validación de roles
+- CORS
+- HTTPS recomendado
+- Sanitización de inputs
+16. Depuración y Solución de Problemas
+Logs:
+docker logs backend -f
+docker logs db -f
 
-### Analyzing the Bundle Size
+Errores comunes:
+- No conecta a BD → revisar host/puerto/pass
+- Token inválido → revisar expiración
+- Excel inválido → revisar encabezados
+17. Glosario
+CRUD: Crear, leer, actualizar, eliminar
+JWT: Token de autenticación
+API REST: Servicios HTTP
+Build: Versión de producción
+Transacción: Operaciones atómicas
+Fuzzy Matching: Coincidencia aproximada
+18. Referencias
+PostgreSQL Docs
+React Documentation
+Express Documentation
+AWS EC2 Documentation
+Docker Documentation
+19. Herramientas
+Lenguajes:
+ - JavaScript, SQL
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Frameworks:
+ - React, Express
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+APIs externas:
+ - Chart.js, Multer, XLSX
+20. Bibliografía
+Sommerville – Software Engineering
+Gamma et al. – Design Patterns
+Fowler – Refactoring
