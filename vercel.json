@@ -23,7 +23,9 @@
             "dest": "/$1"
         }
     ],
-    "env": {
-        "NODE_ENV": "production"
+    "build": {
+        "env": {
+            "DISABLE_ESLINT_PLUGIN": "true"
+        }
     }
 }
