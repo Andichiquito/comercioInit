@@ -1,18 +1,21 @@
 const express = require('express');
-const { query } = require('../config/database');
+const { supabase } = require('../config/database');
 const router = express.Router();
 
 // Ruta para contar registros en la tabla hoja1
 router.get('/hoja1', async (req, res) => {
   try {
-    const result = await query('SELECT COUNT(*) as total FROM hoja1');
-    const total = result.rows[0].total;
-    
+    const { count, error } = await supabase
+      .from('hoja1')
+      .select('*', { count: 'exact', head: true });
+
+    if (error) throw error;
+
     res.json({
       success: true,
       tabla: 'hoja1',
-      total_registros: parseInt(total),
-      mensaje: `La tabla hoja1 tiene ${total} registros`,
+      total_registros: count || 0,
+      mensaje: `La tabla hoja1 tiene ${count || 0} registros`,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
@@ -29,14 +32,17 @@ router.get('/hoja1', async (req, res) => {
 // Ruta para contar registros en la tabla usuarios
 router.get('/usuarios', async (req, res) => {
   try {
-    const result = await query('SELECT COUNT(*) as total FROM usuarios');
-    const total = result.rows[0].total;
-    
+    const { count, error } = await supabase
+      .from('usuarios')
+      .select('*', { count: 'exact', head: true });
+
+    if (error) throw error;
+
     res.json({
       success: true,
       tabla: 'usuarios',
-      total_registros: parseInt(total),
-      mensaje: `La tabla usuarios tiene ${total} registros`,
+      total_registros: count || 0,
+      mensaje: `La tabla usuarios tiene ${count || 0} registros`,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
@@ -54,13 +60,16 @@ router.get('/usuarios', async (req, res) => {
 router.get('/ambas', async (req, res) => {
   try {
     const [hoja1Result, usuariosResult] = await Promise.all([
-      query('SELECT COUNT(*) as total FROM hoja1'),
-      query('SELECT COUNT(*) as total FROM usuarios')
+      supabase.from('hoja1').select('*', { count: 'exact', head: true }),
+      supabase.from('usuarios').select('*', { count: 'exact', head: true })
     ]);
-    
-    const totalHoja1 = parseInt(hoja1Result.rows[0].total);
-    const totalUsuarios = parseInt(usuariosResult.rows[0].total);
-    
+
+    if (hoja1Result.error) throw hoja1Result.error;
+    if (usuariosResult.error) throw usuariosResult.error;
+
+    const totalHoja1 = hoja1Result.count || 0;
+    const totalUsuarios = usuariosResult.count || 0;
+
     res.json({
       success: true,
       tablas: {
@@ -92,42 +101,39 @@ router.get('/ambas', async (req, res) => {
 // Ruta para obtener información detallada de las tablas
 router.get('/info', async (req, res) => {
   try {
-    // Verificar si las tablas existen
-    const tablasExistentes = await query(`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public' 
-      AND table_name IN ('hoja1', 'usuarios')
-    `);
-    
-    const tablasEncontradas = tablasExistentes.rows.map(row => row.table_name);
-    
     const resultados = {};
-    
-    // Contar registros en cada tabla existente
-    for (const tabla of tablasEncontradas) {
+    const tablas = ['hoja1', 'usuarios'];
+
+    // Contar registros en cada tabla
+    for (const tabla of tablas) {
       try {
-        const result = await query(`SELECT COUNT(*) as total FROM ${tabla}`);
-        resultados[tabla] = {
-          existe: true,
-          total_registros: parseInt(result.rows[0].total)
-        };
+        const { count, error } = await supabase
+          .from(tabla)
+          .select('*', { count: 'exact', head: true });
+
+        if (error) {
+          resultados[tabla] = {
+            existe: false,
+            error: error.message
+          };
+        } else {
+          resultados[tabla] = {
+            existe: true,
+            total_registros: count || 0
+          };
+        }
       } catch (error) {
         resultados[tabla] = {
-          existe: true,
+          existe: false,
           error: error.message
         };
       }
     }
-    
-    // Verificar tablas que no existen
-    if (!tablasEncontradas.includes('hoja1')) {
-      resultados.hoja1 = { existe: false, mensaje: 'La tabla hoja1 no existe' };
-    }
-    if (!tablasEncontradas.includes('usuarios')) {
-      resultados.usuarios = { existe: false, mensaje: 'La tabla usuarios no existe' };
-    }
-    
+
+    const tablasEncontradas = Object.keys(resultados).filter(
+      tabla => resultados[tabla].existe
+    );
+
     res.json({
       success: true,
       tablas_encontradas: tablasEncontradas,

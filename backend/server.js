@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
   res.json({
     message: '🚀 Servidor backend funcionando correctamente',
     timestamp: new Date().toISOString(),
-    database: 'PostgreSQL - Comercio'
+    database: 'Supabase (PostgreSQL)'
   });
 });
 
@@ -108,7 +108,7 @@ app.listen(PORT, () => {
   console.log('🚀 Servidor iniciado en puerto', PORT);
   console.log('📡 URL:', `http://localhost:${PORT}`);
   console.log('🔗 Frontend:', 'http://localhost:3000');
-  
+
   // Probar conexión a la base de datos al iniciar
   testConnection();
 });

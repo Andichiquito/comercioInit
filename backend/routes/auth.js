@@ -1,6 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const { query } = require('../config/database');
+const { supabase } = require('../config/database');
 const { generateToken, updateLastAccess } = require('../middleware/auth');
 
 const router = express.Router();
@@ -69,12 +69,13 @@ router.post('/register', async (req, res) => {
     }
 
     // Verificar si el email ya existe
-    const existingUser = await query(
-      'SELECT id FROM usuarios WHERE email = $1',
-      [email.toLowerCase()]
-    );
+    const { data: existingUser, error: checkError } = await supabase
+      .from('usuarios')
+      .select('id')
+      .eq('email', email.toLowerCase())
+      .single();
 
-    if (existingUser.rows.length > 0) {
+    if (existingUser) {
       return res.status(400).json({
         success: false,
         message: 'El email ya está registrado'
@@ -86,14 +87,25 @@ router.post('/register', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
     // Insertar nuevo usuario
-    const result = await query(
-      `INSERT INTO usuarios (email, password_hash, nombre, apellido, rol, activo, fecha_registro, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-       RETURNING id, email, nombre, apellido, rol, fecha_registro`,
-      [email.toLowerCase(), passwordHash, nombre, apellido, rol]
-    );
+    const { data: newUser, error: insertError } = await supabase
+      .from('usuarios')
+      .insert({
+        email: email.toLowerCase(),
+        password_hash: passwordHash,
+        nombre,
+        apellido,
+        rol,
+        activo: true,
+        fecha_registro: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select('id, email, nombre, apellido, rol, fecha_registro')
+      .single();
 
-    const newUser = result.rows[0];
+    if (insertError) {
+      throw insertError;
+    }
 
     // Generar token
     const token = generateToken(newUser.id);
@@ -149,19 +161,18 @@ router.post('/login', async (req, res) => {
     }
 
     // Buscar usuario
-    const result = await query(
-      'SELECT id, email, password_hash, nombre, apellido, rol, activo FROM usuarios WHERE email = $1',
-      [email.toLowerCase()]
-    );
+    const { data: user, error: userError } = await supabase
+      .from('usuarios')
+      .select('id, email, password_hash, nombre, apellido, rol, activo')
+      .eq('email', email.toLowerCase())
+      .single();
 
-    if (result.rows.length === 0) {
+    if (userError || !user) {
       return res.status(401).json({
         success: false,
         message: 'Credenciales inválidas'
       });
     }
-
-    const user = result.rows[0];
 
     // Verificar si el usuario está activo
     if (!user.activo) {
@@ -226,15 +237,17 @@ router.get('/verify', async (req, res) => {
 
     const jwt = require('jsonwebtoken');
     const JWT_SECRET = process.env.JWT_SECRET || 'tu_secreto_super_seguro_cambiar_en_produccion';
-    
-    const decoded = jwt.verify(token, JWT_SECRET);
-    
-    const result = await query(
-      'SELECT id, email, nombre, apellido, rol, activo FROM usuarios WHERE id = $1 AND activo = true',
-      [decoded.userId]
-    );
 
-    if (result.rows.length === 0) {
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    const { data: user, error: userError } = await supabase
+      .from('usuarios')
+      .select('id, email, nombre, apellido, rol, activo')
+      .eq('id', decoded.userId)
+      .eq('activo', true)
+      .single();
+
+    if (userError || !user) {
       return res.status(401).json({
         success: false,
         message: 'Usuario no encontrado'
@@ -244,7 +257,7 @@ router.get('/verify', async (req, res) => {
     res.json({
       success: true,
       data: {
-        user: result.rows[0]
+        user
       }
     });
 
@@ -266,7 +279,7 @@ router.post('/logout', async (req, res) => {
     if (token) {
       const jwt = require('jsonwebtoken');
       const JWT_SECRET = process.env.JWT_SECRET || 'tu_secreto_super_seguro_cambiar_en_produccion';
-      
+
       try {
         const decoded = jwt.verify(token, JWT_SECRET);
         await updateLastAccess(decoded.userId);

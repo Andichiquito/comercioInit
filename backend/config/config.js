@@ -2,16 +2,10 @@ require('dotenv').config();
 
 // Configuración centralizada de la aplicación
 module.exports = {
-  // Configuración de la base de datos
-  database: {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
-    database: process.env.DB_NAME || 'Comercio',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'Racquet12',
-    max: 20,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 5000,
+  // Configuración de Supabase
+  supabase: {
+    url: process.env.SUPABASE_URL,
+    anonKey: process.env.SUPABASE_ANON_KEY,
   },
 
   // Configuración del servidor

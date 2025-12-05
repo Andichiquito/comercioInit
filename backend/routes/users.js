@@ -1,6 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const { query } = require('../config/database');
+const { supabase } = require('../config/database');
 const { authenticateToken, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
@@ -17,51 +17,29 @@ router.get('/', async (req, res) => {
     const offset = (page - 1) * limit;
     const search = req.query.search || '';
 
-    let whereClause = '';
-    let queryParams = [];
-    let paramCount = 0;
+    let query = supabase
+      .from('usuarios')
+      .select('id, email, nombre, apellido, rol, activo, fecha_registro, ultimo_acceso, created_at, updated_at', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
 
     if (search) {
-      paramCount++;
-      whereClause = `WHERE (nombre ILIKE $${paramCount} OR apellido ILIKE $${paramCount} OR email ILIKE $${paramCount})`;
-      queryParams.push(`%${search}%`);
+      query = query.or(`nombre.ilike.%${search}%,apellido.ilike.%${search}%,email.ilike.%${search}%`);
     }
 
-    // Obtener usuarios
-    const usersQuery = `
-      SELECT 
-        id, email, nombre, apellido, rol, activo, 
-        fecha_registro, ultimo_acceso, created_at, updated_at
-      FROM usuarios 
-      ${whereClause}
-      ORDER BY created_at DESC
-      LIMIT $${paramCount + 1} OFFSET $${paramCount + 2}
-    `;
+    const { data: users, error, count } = await query;
 
-    queryParams.push(limit, offset);
-
-    const users = await query(usersQuery, queryParams);
-
-    // Obtener total de usuarios
-    const countQuery = `
-      SELECT COUNT(*) as total 
-      FROM usuarios 
-      ${whereClause}
-    `;
-    
-    const countParams = search ? [`%${search}%`] : [];
-    const countResult = await query(countQuery, countParams);
-    const total = parseInt(countResult.rows[0].total);
+    if (error) throw error;
 
     res.json({
       success: true,
       data: {
-        users: users.rows,
+        users: users || [],
         pagination: {
           page,
           limit,
-          total,
-          pages: Math.ceil(total / limit)
+          total: count || 0,
+          pages: Math.ceil((count || 0) / limit)
         }
       }
     });
@@ -80,16 +58,13 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    const result = await query(
-      `SELECT 
-        id, email, nombre, apellido, rol, activo, 
-        fecha_registro, ultimo_acceso, created_at, updated_at
-       FROM usuarios 
-       WHERE id = $1`,
-      [id]
-    );
+    const { data: user, error } = await supabase
+      .from('usuarios')
+      .select('id, email, nombre, apellido, rol, activo, fecha_registro, ultimo_acceso, created_at, updated_at')
+      .eq('id', id)
+      .single();
 
-    if (result.rows.length === 0) {
+    if (error || !user) {
       return res.status(404).json({
         success: false,
         message: 'Usuario no encontrado'
@@ -99,7 +74,7 @@ router.get('/:id', async (req, res) => {
     res.json({
       success: true,
       data: {
-        user: result.rows[0]
+        user
       }
     });
 
@@ -183,12 +158,13 @@ router.post('/', async (req, res) => {
     }
 
     // Verificar si el email ya existe
-    const existingUser = await query(
-      'SELECT id FROM usuarios WHERE email = $1',
-      [email.toLowerCase()]
-    );
+    const { data: existingUser, error: checkError } = await supabase
+      .from('usuarios')
+      .select('id')
+      .eq('email', email.toLowerCase())
+      .single();
 
-    if (existingUser.rows.length > 0) {
+    if (existingUser) {
       return res.status(400).json({
         success: false,
         message: 'El email ya está registrado'
@@ -200,14 +176,23 @@ router.post('/', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
     // Insertar nuevo usuario
-    const result = await query(
-      `INSERT INTO usuarios (email, password_hash, nombre, apellido, rol, activo, fecha_registro, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-       RETURNING id, email, nombre, apellido, rol, activo, fecha_registro`,
-      [email.toLowerCase(), passwordHash, nombre, apellido, rol]
-    );
+    const { data: newUser, error: insertError } = await supabase
+      .from('usuarios')
+      .insert({
+        email: email.toLowerCase(),
+        password_hash: passwordHash,
+        nombre,
+        apellido,
+        rol,
+        activo: true,
+        fecha_registro: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select('id, email, nombre, apellido, rol, activo, fecha_registro')
+      .single();
 
-    const newUser = result.rows[0];
+    if (insertError) throw insertError;
 
     res.status(201).json({
       success: true,
@@ -233,22 +218,21 @@ router.put('/:id', async (req, res) => {
     const { email, nombre, apellido, rol, activo, password } = req.body;
 
     // Verificar que el usuario existe
-    const existingUser = await query(
-      'SELECT id FROM usuarios WHERE id = $1',
-      [id]
-    );
+    const { data: existingUser, error: findError } = await supabase
+      .from('usuarios')
+      .select('id')
+      .eq('id', id)
+      .single();
 
-    if (existingUser.rows.length === 0) {
+    if (findError || !existingUser) {
       return res.status(404).json({
         success: false,
         message: 'Usuario no encontrado'
       });
     }
 
-    // Construir query de actualización dinámicamente
-    const updates = [];
-    const values = [];
-    let paramCount = 0;
+    // Construir objeto de actualización dinámicamente
+    const updateData = {};
 
     if (email !== undefined) {
       // Validar formato de email
@@ -271,33 +255,29 @@ router.put('/:id', async (req, res) => {
       }
 
       // Verificar si el email ya existe en otro usuario
-      const emailCheck = await query(
-        'SELECT id FROM usuarios WHERE email = $1 AND id != $2',
-        [email.toLowerCase(), id]
-      );
+      const { data: emailCheck, error: emailError } = await supabase
+        .from('usuarios')
+        .select('id')
+        .eq('email', email.toLowerCase())
+        .neq('id', id)
+        .single();
 
-      if (emailCheck.rows.length > 0) {
+      if (emailCheck) {
         return res.status(400).json({
           success: false,
           message: 'El email ya está en uso por otro usuario'
         });
       }
 
-      paramCount++;
-      updates.push(`email = $${paramCount}`);
-      values.push(email.toLowerCase());
+      updateData.email = email.toLowerCase();
     }
 
     if (nombre !== undefined) {
-      paramCount++;
-      updates.push(`nombre = $${paramCount}`);
-      values.push(nombre);
+      updateData.nombre = nombre;
     }
 
     if (apellido !== undefined) {
-      paramCount++;
-      updates.push(`apellido = $${paramCount}`);
-      values.push(apellido);
+      updateData.apellido = apellido;
     }
 
     if (rol !== undefined) {
@@ -307,15 +287,11 @@ router.put('/:id', async (req, res) => {
           message: 'Rol inválido. Debe ser "admin" o "cliente"'
         });
       }
-      paramCount++;
-      updates.push(`rol = $${paramCount}`);
-      values.push(rol);
+      updateData.rol = rol;
     }
 
     if (activo !== undefined) {
-      paramCount++;
-      updates.push(`activo = $${paramCount}`);
-      values.push(activo);
+      updateData.activo = activo;
     }
 
     if (password !== undefined && password.trim() !== '') {
@@ -350,40 +326,34 @@ router.put('/:id', async (req, res) => {
         });
       }
 
-      paramCount++;
       const passwordHash = await bcrypt.hash(password, 10);
-      updates.push(`password_hash = $${paramCount}`);
-      values.push(passwordHash);
+      updateData.password_hash = passwordHash;
     }
 
-    if (updates.length === 0) {
+    if (Object.keys(updateData).length === 0) {
       return res.status(400).json({
         success: false,
         message: 'No hay campos para actualizar'
       });
     }
 
-    // Agregar updated_at (no es parámetro)
-    updates.push(`updated_at = CURRENT_TIMESTAMP`);
-    
-    // Agregar el ID como último parámetro
-    paramCount++;
-    values.push(id);
+    // Agregar updated_at
+    updateData.updated_at = new Date().toISOString();
 
-    const updateQuery = `
-      UPDATE usuarios 
-      SET ${updates.join(', ')}
-      WHERE id = $${paramCount}
-      RETURNING id, email, nombre, apellido, rol, activo, fecha_registro, ultimo_acceso, updated_at
-    `;
+    const { data: updatedUser, error: updateError } = await supabase
+      .from('usuarios')
+      .update(updateData)
+      .eq('id', id)
+      .select('id, email, nombre, apellido, rol, activo, fecha_registro, ultimo_acceso, updated_at')
+      .single();
 
-    const result = await query(updateQuery, values);
+    if (updateError) throw updateError;
 
     res.json({
       success: true,
       message: 'Usuario actualizado exitosamente',
       data: {
-        user: result.rows[0]
+        user: updatedUser
       }
     });
 
@@ -402,12 +372,13 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
     // Verificar que el usuario existe
-    const existingUser = await query(
-      'SELECT id, email FROM usuarios WHERE id = $1',
-      [id]
-    );
+    const { data: existingUser, error: findError } = await supabase
+      .from('usuarios')
+      .select('id, email')
+      .eq('id', id)
+      .single();
 
-    if (existingUser.rows.length === 0) {
+    if (findError || !existingUser) {
       return res.status(404).json({
         success: false,
         message: 'Usuario no encontrado'
@@ -423,10 +394,12 @@ router.delete('/:id', async (req, res) => {
     }
 
     // Eliminar usuario completamente (hard delete)
-    await query(
-      'DELETE FROM usuarios WHERE id = $1',
-      [id]
-    );
+    const { error: deleteError } = await supabase
+      .from('usuarios')
+      .delete()
+      .eq('id', id);
+
+    if (deleteError) throw deleteError;
 
     res.json({
       success: true,
@@ -447,12 +420,17 @@ router.patch('/:id/reactivate', async (req, res) => {
   try {
     const { id } = req.params;
 
-    const result = await query(
-      'UPDATE usuarios SET activo = true, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id, email, nombre, apellido, rol, activo',
-      [id]
-    );
+    const { data: reactivatedUser, error: updateError } = await supabase
+      .from('usuarios')
+      .update({
+        activo: true,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select('id, email, nombre, apellido, rol, activo')
+      .single();
 
-    if (result.rows.length === 0) {
+    if (updateError || !reactivatedUser) {
       return res.status(404).json({
         success: false,
         message: 'Usuario no encontrado'
@@ -463,7 +441,7 @@ router.patch('/:id/reactivate', async (req, res) => {
       success: true,
       message: 'Usuario reactivado exitosamente',
       data: {
-        user: result.rows[0]
+        user: reactivatedUser
       }
     });
 

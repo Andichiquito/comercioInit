@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { query } = require('../config/database');
+const { supabase } = require('../config/database');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'tu_secreto_super_seguro_cambiar_en_produccion';
 
@@ -9,35 +9,37 @@ const authenticateToken = async (req, res, next) => {
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
   if (!token) {
-    return res.status(401).json({ 
-      success: false, 
-      message: 'Token de acceso requerido' 
+    return res.status(401).json({
+      success: false,
+      message: 'Token de acceso requerido'
     });
   }
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    
-    // Verificar que el usuario aún existe y está activo
-    const userResult = await query(
-      'SELECT id, email, nombre, apellido, rol, activo FROM usuarios WHERE id = $1 AND activo = true',
-      [decoded.userId]
-    );
 
-    if (userResult.rows.length === 0) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Usuario no encontrado o inactivo' 
+    // Verificar que el usuario aún existe y está activo
+    const { data: user, error } = await supabase
+      .from('usuarios')
+      .select('id, email, nombre, apellido, rol, activo')
+      .eq('id', decoded.userId)
+      .eq('activo', true)
+      .single();
+
+    if (error || !user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Usuario no encontrado o inactivo'
       });
     }
 
-    req.user = userResult.rows[0];
+    req.user = user;
     next();
   } catch (error) {
     console.error('Error verificando token:', error);
-    return res.status(403).json({ 
-      success: false, 
-      message: 'Token inválido o expirado' 
+    return res.status(403).json({
+      success: false,
+      message: 'Token inválido o expirado'
     });
   }
 };
@@ -45,9 +47,9 @@ const authenticateToken = async (req, res, next) => {
 // Middleware para verificar rol de administrador
 const requireAdmin = (req, res, next) => {
   if (req.user.rol !== 'admin') {
-    return res.status(403).json({ 
-      success: false, 
-      message: 'Acceso denegado. Se requieren permisos de administrador' 
+    return res.status(403).json({
+      success: false,
+      message: 'Acceso denegado. Se requieren permisos de administrador'
     });
   }
   next();
@@ -56,9 +58,9 @@ const requireAdmin = (req, res, next) => {
 // Middleware para verificar rol de cliente o admin
 const requireAuth = (req, res, next) => {
   if (!['admin', 'cliente'].includes(req.user.rol)) {
-    return res.status(403).json({ 
-      success: false, 
-      message: 'Acceso denegado. Se requiere autenticación' 
+    return res.status(403).json({
+      success: false,
+      message: 'Acceso denegado. Se requiere autenticación'
     });
   }
   next();
@@ -76,14 +78,16 @@ const optionalAuth = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    
-    const userResult = await query(
-      'SELECT id, email, nombre, apellido, rol, activo FROM usuarios WHERE id = $1 AND activo = true',
-      [decoded.userId]
-    );
 
-    if (userResult.rows.length > 0) {
-      req.user = userResult.rows[0];
+    const { data: user, error } = await supabase
+      .from('usuarios')
+      .select('id, email, nombre, apellido, rol, activo')
+      .eq('id', decoded.userId)
+      .eq('activo', true)
+      .single();
+
+    if (user && !error) {
+      req.user = user;
     } else {
       req.user = null;
     }
@@ -97,8 +101,8 @@ const optionalAuth = async (req, res, next) => {
 // Función para generar token JWT
 const generateToken = (userId) => {
   return jwt.sign(
-    { userId }, 
-    JWT_SECRET, 
+    { userId },
+    JWT_SECRET,
     { expiresIn: '24h' }
   );
 };
@@ -106,10 +110,10 @@ const generateToken = (userId) => {
 // Función para actualizar último acceso
 const updateLastAccess = async (userId) => {
   try {
-    await query(
-      'UPDATE usuarios SET ultimo_acceso = CURRENT_TIMESTAMP WHERE id = $1',
-      [userId]
-    );
+    await supabase
+      .from('usuarios')
+      .update({ ultimo_acceso: new Date().toISOString() })
+      .eq('id', userId);
   } catch (error) {
     console.error('Error actualizando último acceso:', error);
   }
